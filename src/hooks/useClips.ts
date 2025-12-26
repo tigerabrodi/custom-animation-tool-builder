@@ -5,6 +5,12 @@ import type {
   Keyframe,
 } from '../types/animation'
 import { validatePascalCase } from '../utils/validation'
+import {
+  scaleKeyframeTimes,
+  offsetKeyframeTimes,
+  reverseKeyframeTimes,
+  calculateDuration,
+} from '../utils/clipOperations'
 
 interface UseClipsReturn {
   clips: AnimationClip[]
@@ -17,6 +23,9 @@ interface UseClipsReturn {
   getActiveClip: () => AnimationClip | null
   updateClipKeyframes: (clipId: string, keyframes: Keyframe[]) => boolean
   setClipInterpolation: (clipId: string, mode: InterpolationMode) => boolean
+  scaleClipDuration: (clipId: string, scaleFactor: number) => void
+  offsetClipTiming: (clipId: string, offsetSeconds: number) => void
+  reverseClip: (clipId: string) => void
 }
 
 export function useClips(): UseClipsReturn {
@@ -158,6 +167,75 @@ export function useClips(): UseClipsReturn {
     [clips]
   )
 
+  /**
+   * Scale the duration of a clip by multiplying all keyframe times by scaleFactor.
+   * @param clipId - ID of the clip to scale
+   * @param scaleFactor - Factor to multiply times by (must be > 0)
+   */
+  const scaleClipDuration = useCallback(
+    (clipId: string, scaleFactor: number) => {
+      if (scaleFactor <= 0) {
+        return
+      }
+
+      setClips((prev) =>
+        prev.map((clip) => {
+          if (clip.id === clipId) {
+            const scaledKeyframes = scaleKeyframeTimes(
+              clip.keyframes,
+              scaleFactor
+            )
+            const duration = calculateDuration(scaledKeyframes)
+            return { ...clip, keyframes: scaledKeyframes, duration }
+          }
+          return clip
+        })
+      )
+    },
+    []
+  )
+
+  /**
+   * Offset all keyframe times in a clip by a given number of seconds.
+   * @param clipId - ID of the clip to offset
+   * @param offsetSeconds - Seconds to add (can be negative, but times will be clamped to 0)
+   */
+  const offsetClipTiming = useCallback(
+    (clipId: string, offsetSeconds: number) => {
+      setClips((prev) =>
+        prev.map((clip) => {
+          if (clip.id === clipId) {
+            const offsetKeyframes = offsetKeyframeTimes(
+              clip.keyframes,
+              offsetSeconds
+            )
+            const duration = calculateDuration(offsetKeyframes)
+            return { ...clip, keyframes: offsetKeyframes, duration }
+          }
+          return clip
+        })
+      )
+    },
+    []
+  )
+
+  /**
+   * Reverse the keyframe timing in a clip (first becomes last, last becomes first).
+   * @param clipId - ID of the clip to reverse
+   */
+  const reverseClip = useCallback((clipId: string) => {
+    setClips((prev) =>
+      prev.map((clip) => {
+        if (clip.id === clipId) {
+          const reversedKeyframes = reverseKeyframeTimes(clip.keyframes)
+          const duration = calculateDuration(reversedKeyframes)
+          return { ...clip, keyframes: reversedKeyframes, duration }
+        }
+        return clip
+      })
+    )
+  }, [])
+
   return {
     clips,
     activeClipId,
@@ -169,6 +247,9 @@ export function useClips(): UseClipsReturn {
     getActiveClip,
     updateClipKeyframes,
     setClipInterpolation,
+    scaleClipDuration,
+    offsetClipTiming,
+    reverseClip,
   }
 }
 

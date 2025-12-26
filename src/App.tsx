@@ -3,9 +3,11 @@ import * as THREE from 'three'
 import { BoneTree } from './components/bone-tree'
 import {
   ClipListPanel,
+  ClipOperationsPanel,
   ClipPropertiesPanel,
   PlaybackControls,
   TransformPanel,
+  VisualizationPanel,
 } from './components/panels'
 import { Timeline, TimelineControls } from './components/timeline'
 import { Viewport } from './components/viewport/Viewport'
@@ -15,6 +17,7 @@ import { useModelLoader } from './hooks/useModelLoader'
 import { usePlayback } from './hooks/usePlayback'
 import { useSkeletonEditor } from './hooks/useSkeletonEditor'
 import { useTimelineZoom } from './hooks/useTimelineZoom'
+import { useVisualization } from './hooks/useVisualization'
 
 function App() {
   const { modelUrl, isLoading, error, loadModel, clearModel } = useModelLoader()
@@ -55,6 +58,9 @@ function App() {
     getActiveClip,
     updateClipKeyframes,
     setClipInterpolation,
+    scaleClipDuration,
+    offsetClipTiming,
+    reverseClip,
   } = useClips()
 
   const {
@@ -74,6 +80,9 @@ function App() {
   // Timeline zoom and snap
   const { zoom, zoomIn, zoomOut } = useTimelineZoom()
   const [snapInterval, setSnapInterval] = useState<number | null>(null)
+
+  // Visualization mode
+  const { mode: visualizationMode, setMode: setVisualizationMode } = useVisualization()
 
   // Get active clip data
   const activeClip = getActiveClip()
@@ -181,8 +190,19 @@ function App() {
 
         {error && <span className="text-red-400 text-sm">{error}</span>}
 
+        {/* Visualization mode toggle */}
         {bones && (
-          <span className="text-gray-400 text-sm ml-auto">
+          <>
+            <div className="w-px h-6 bg-gray-600 ml-auto" />
+            <VisualizationPanel
+              mode={visualizationMode}
+              onModeChange={setVisualizationMode}
+            />
+          </>
+        )}
+
+        {bones && (
+          <span className="text-gray-400 text-sm">
             {bones.size} bones loaded
           </span>
         )}
@@ -231,6 +251,7 @@ function App() {
                 onSelectBone={setSelectedBone}
                 onSceneLoaded={handleSceneLoaded}
                 showBoneOverlay={!!bones}
+                visualizationMode={visualizationMode}
                 isPlaying={isPlaying}
                 currentTime={currentTime}
                 keyframes={activeKeyframes}
@@ -300,13 +321,24 @@ function App() {
               onResetAllBones={resetAllBones}
             />
           </div>
-          <div className="border-t border-gray-700 h-64 overflow-y-auto">
+          <div className="border-t border-gray-700 overflow-y-auto">
             <ClipPropertiesPanel
               clip={activeClip}
               onRenameClip={renameClip}
               onSetInterpolation={setClipInterpolation}
             />
           </div>
+          {activeClipId && (
+            <div className="border-t border-gray-700 overflow-y-auto">
+              <ClipOperationsPanel
+                clipId={activeClipId}
+                duration={activeDuration}
+                onScaleDuration={scaleClipDuration}
+                onOffsetTiming={offsetClipTiming}
+                onReverseClip={reverseClip}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -7,6 +7,7 @@ import type {
   InterpolationMode,
   Keyframe,
   TransformMode,
+  VisualizationMode,
 } from '../../types'
 import { AnimationController } from './AnimationController'
 import { BoneOverlay } from './BoneOverlay'
@@ -23,6 +24,7 @@ interface ViewportProps {
   onSelectBone?: (bone: BoneName | null) => void
   onSceneLoaded?: (scene: THREE.Object3D) => void
   showBoneOverlay?: boolean
+  visualizationMode?: VisualizationMode
   // Animation props
   isPlaying?: boolean
   currentTime?: number
@@ -44,6 +46,7 @@ function Scene({
   onSelectBone,
   onSceneLoaded,
   showBoneOverlay = true,
+  visualizationMode = 'BOTH',
   isPlaying = false,
   currentTime = 0,
   keyframes = [],
@@ -51,6 +54,13 @@ function Scene({
   duration = 0,
   onTick,
 }: SceneProps) {
+  // Derive visibility from visualization mode
+  const showMesh = visualizationMode === 'MESH' || visualizationMode === 'BOTH'
+  const showSkeleton = visualizationMode === 'SKELETON' || visualizationMode === 'BOTH'
+
+  // Combine showBoneOverlay prop with visualization mode
+  const skeletonVisible = showBoneOverlay && showSkeleton
+
   return (
     <>
       {/* Lighting */}
@@ -74,7 +84,7 @@ function Scene({
 
       {/* Model */}
       {modelUrl && (
-        <ModelRenderer url={modelUrl} onSceneLoaded={onSceneLoaded} />
+        <ModelRenderer url={modelUrl} onSceneLoaded={onSceneLoaded} visible={showMesh} />
       )}
 
       {/* Bone Overlay - visual representation of skeleton */}
@@ -82,7 +92,7 @@ function Scene({
         <BoneOverlay
           bones={bones}
           selectedBone={selectedBone ?? null}
-          visible={showBoneOverlay}
+          visible={skeletonVisible}
           onSelectBone={onSelectBone}
         />
       )}
@@ -132,6 +142,7 @@ export function Viewport({
   onSelectBone,
   onSceneLoaded,
   showBoneOverlay,
+  visualizationMode,
   isPlaying,
   currentTime,
   keyframes,
@@ -166,6 +177,7 @@ export function Viewport({
           onSelectBone={onSelectBone}
           onSceneLoaded={onSceneLoaded}
           showBoneOverlay={showBoneOverlay}
+          visualizationMode={visualizationMode}
           isPlaying={isPlaying}
           currentTime={currentTime}
           keyframes={keyframes}

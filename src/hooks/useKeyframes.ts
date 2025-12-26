@@ -14,6 +14,9 @@ export interface KeyframesState {
   updateKeyframeTime: (id: string, newTime: number) => void
   selectKeyframe: (id: string | null) => void
   getKeyframeById: (id: string) => Keyframe | undefined
+  duplicateKeyframe: (id: string, newTime: number) => string | null
+  updateKeyframeLabel: (id: string, label: string | undefined) => void
+  getKeyframeTimes: () => number[]
 }
 
 /**
@@ -163,6 +166,63 @@ export function useKeyframes(): KeyframesState {
     [keyframes]
   )
 
+  /**
+   * Duplicates an existing keyframe to a new time.
+   * Returns the ID of the new keyframe, or null if the source keyframe doesn't exist.
+   */
+  const duplicateKeyframe = useCallback(
+    (id: string, newTime: number): string | null => {
+      const sourceKeyframe = keyframes.find((kf) => kf.id === id)
+      if (!sourceKeyframe) {
+        return null
+      }
+
+      const newId = crypto.randomUUID()
+      const duplicatedKeyframe: Keyframe = {
+        id: newId,
+        time: newTime,
+        label: sourceKeyframe.label,
+        bones: { ...sourceKeyframe.bones },
+      }
+
+      setKeyframes((prev) => sortKeyframes([...prev, duplicatedKeyframe]))
+
+      return newId
+    },
+    [keyframes]
+  )
+
+  /**
+   * Updates an existing keyframe's label.
+   * Pass undefined to remove the label.
+   */
+  const updateKeyframeLabel = useCallback(
+    (id: string, label: string | undefined) => {
+      setKeyframes((prev) =>
+        prev.map((kf) => {
+          if (kf.id === id) {
+            if (label === undefined) {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const { label: _unusedLabel, ...rest } = kf
+              return rest as Keyframe
+            }
+            return { ...kf, label }
+          }
+          return kf
+        })
+      )
+    },
+    []
+  )
+
+  /**
+   * Gets all keyframe times in ascending order.
+   * Useful for timeline rendering.
+   */
+  const getKeyframeTimes = useCallback((): number[] => {
+    return keyframes.map((kf) => kf.time)
+  }, [keyframes])
+
   return {
     keyframes,
     selectedKeyframeId,
@@ -172,5 +232,8 @@ export function useKeyframes(): KeyframesState {
     updateKeyframeTime,
     selectKeyframe,
     getKeyframeById,
+    duplicateKeyframe,
+    updateKeyframeLabel,
+    getKeyframeTimes,
   }
 }

@@ -114,27 +114,31 @@ Hips (root)
 - [x] Horizontal scroll when zoomed
 - [x] timelineUtils.ts with tests
 
-### Stage 5: Advanced Features (Phases 7, 9, 11) - NOT STARTED
+### Stage 5: Advanced Features (Phases 7, 9, 11) - FULLY COMPLETED
 
-**Can parallelize 3 agents:**
+**Parallelized 3 agents:**
 
-#### Agent A: Advanced Interpolation
-- [ ] STEP interpolation (instant snap)
-- [ ] CUBICSPLINE interpolation
-- [ ] Auto tangent calculation (Catmull-Rom style)
-- [ ] `calculateCubicTangents` function
-- [ ] Per-clip interpolation mode selector UI
+#### Agent A: Advanced Interpolation - COMPLETED
+- [x] STEP interpolation (instant snap to previous keyframe)
+- [x] CUBICSPLINE interpolation (Catmull-Rom for position/scale, Squad for quaternions)
+- [x] Auto tangent calculation via surrounding keyframes
+- [x] `catmullRomInterpolate`, `catmullRomVector3`, `squadInterpolate` functions
+- [x] Falls back to LINEAR when < 4 keyframes
 
-#### Agent B: Timeline Operations
-- [ ] Scale clip duration (`scaleKeyframeTimes`)
-- [ ] Offset clip timing (`offsetKeyframeTimes`)
-- [ ] Duplicate keyframe to new time
-- [ ] Keyframe labels/notes
+#### Agent B: Timeline Operations - COMPLETED
+- [x] Scale clip duration (`scaleKeyframeTimes`)
+- [x] Offset clip timing (`offsetKeyframeTimes`)
+- [x] Reverse clip timing (`reverseKeyframeTimes`)
+- [x] Duplicate keyframe to new time
+- [x] Keyframe labels (updateKeyframeLabel)
+- [x] ClipOperationsPanel UI
 
-#### Agent C: Visualization Modes
-- [ ] Toggle mesh visibility
-- [ ] Skeleton-only view mode
-- [ ] VisualizationMode selector UI
+#### Agent C: Visualization Modes - COMPLETED
+- [x] Toggle mesh visibility via group wrapper
+- [x] Skeleton-only view mode
+- [x] VisualizationMode: 'MESH' | 'SKELETON' | 'BOTH'
+- [x] VisualizationPanel segmented control UI
+- [x] useVisualization hook
 
 ### Stage 6: Export System (Phase 10) - NOT STARTED
 
@@ -213,6 +217,7 @@ Hips (root)
 - `src/hooks/useTimelineZoom.ts` - Timeline zoom level management
 - `src/hooks/useTimelineDrag.ts` - Timeline drag interactions
 - `src/hooks/useTimelineScroll.ts` - Timeline scroll management
+- `src/hooks/useVisualization.ts` - Visualization mode state
 
 ### Components
 - `src/components/viewport/Viewport.tsx` - Main 3D canvas
@@ -224,6 +229,8 @@ Hips (root)
 - `src/components/panels/ClipListPanel.tsx` - Clip list and management
 - `src/components/panels/ClipPropertiesPanel.tsx` - Active clip properties
 - `src/components/panels/PlaybackControls.tsx` - Play/pause, speed, loop
+- `src/components/panels/ClipOperationsPanel.tsx` - Scale/offset/reverse clip
+- `src/components/panels/VisualizationPanel.tsx` - Mesh/skeleton toggle
 - `src/components/timeline/Timeline.tsx` - Main timeline component
 - `src/components/timeline/TimeRuler.tsx` - Time markers and labels
 - `src/components/timeline/KeyframeTrack.tsx` - Keyframe display area
@@ -240,6 +247,7 @@ Hips (root)
 - `src/utils/validation.ts` - validatePascalCase
 - `src/utils/interpolation.ts` - interpolatePoseAtTime, findSurroundingKeyframes
 - `src/utils/timelineUtils.ts` - snapToGrid, pixelsToTime, timeToPixels, getTickInterval
+- `src/utils/clipOperations.ts` - scaleKeyframeTimes, offsetKeyframeTimes, reverseKeyframeTimes
 
 ---
 

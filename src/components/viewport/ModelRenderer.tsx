@@ -5,9 +5,10 @@ import type * as THREE from 'three';
 interface ModelRendererProps {
   url: string;
   onSceneLoaded?: (scene: THREE.Object3D) => void;
+  visible?: boolean;
 }
 
-export function ModelRenderer({ url, onSceneLoaded }: ModelRendererProps) {
+export function ModelRenderer({ url, onSceneLoaded, visible = true }: ModelRendererProps) {
   const { scene } = useGLTF(url);
 
   useEffect(() => {
@@ -18,5 +19,10 @@ export function ModelRenderer({ url, onSceneLoaded }: ModelRendererProps) {
     onSceneLoaded?.(scene);
   }, [scene, onSceneLoaded]);
 
-  return <primitive object={scene} />;
+  // Wrap in a group to control visibility without mutating scene
+  return (
+    <group visible={visible}>
+      <primitive object={scene} />
+    </group>
+  );
 }
