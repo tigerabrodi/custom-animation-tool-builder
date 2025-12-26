@@ -1,0 +1,8 @@
+export type BoneName =
+  | 'Hips'
+  | 'LeftUpLeg' | 'LeftLeg' | 'LeftFoot' | 'LeftToeBase'
+  | 'RightUpLeg' | 'RightLeg' | 'RightFoot' | 'RightToeBase'
+  | 'Spine02' | 'Spine01' | 'Spine'
+  | 'LeftShoulder' | 'LeftArm' | 'LeftForeArm' | 'LeftHand'
+  | 'RightShoulder' | 'RightArm' | 'RightForeArm' | 'RightHand'
+  | 'neck' | 'Head' | 'head_end' | 'headfront';

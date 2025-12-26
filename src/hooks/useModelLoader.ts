@@ -1,0 +1,73 @@
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { loadGLBFile } from '../services/glbLoader';
+
+interface UseModelLoaderResult {
+  modelUrl: string | null;
+  isLoading: boolean;
+  error: string | null;
+  loadModel: (file: File) => Promise<void>;
+  clearModel: () => void;
+}
+
+export function useModelLoader(): UseModelLoaderResult {
+  const [modelUrl, setModelUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
+
+  const clearModel = useCallback(() => {
+    if (cleanupRef.current) {
+      cleanupRef.current();
+      cleanupRef.current = null;
+    }
+    setModelUrl(null);
+    setError(null);
+  }, []);
+
+  const loadModel = useCallback(async (file: File) => {
+    setIsLoading(true);
+    setError(null);
+
+    // Clean up previous model
+    if (cleanupRef.current) {
+      cleanupRef.current();
+      cleanupRef.current = null;
+    }
+
+    try {
+      const result = await loadGLBFile(file);
+
+      if (!result) {
+        setError('Invalid GLB file. Please select a valid .glb file.');
+        setModelUrl(null);
+        return;
+      }
+
+      cleanupRef.current = result.cleanup;
+      setModelUrl(result.url);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to load model';
+      setError(message);
+      setModelUrl(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (cleanupRef.current) {
+        cleanupRef.current();
+      }
+    };
+  }, []);
+
+  return {
+    modelUrl,
+    isLoading,
+    error,
+    loadModel,
+    clearModel,
+  };
+}
