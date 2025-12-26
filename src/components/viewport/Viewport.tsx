@@ -1,12 +1,36 @@
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Grid } from '@react-three/drei';
-import { ModelRenderer } from './ModelRenderer';
+import { Grid, OrbitControls } from '@react-three/drei'
+import { Canvas } from '@react-three/fiber'
+import * as THREE from 'three'
+import type { BoneName, CoordinateSpace, TransformMode } from '../../types'
+import { BoneOverlay } from './BoneOverlay'
+import { ModelRenderer } from './ModelRenderer'
+import { TransformGizmo } from './TransformGizmo'
 
 interface ViewportProps {
-  modelUrl: string | null;
+  modelUrl: string | null
+  bones?: Map<BoneName, THREE.Bone> | null
+  selectedBone?: BoneName | null
+  transformMode?: TransformMode
+  coordinateSpace?: CoordinateSpace
+  hipsLocked?: boolean
+  onSelectBone?: (bone: BoneName | null) => void
+  onSceneLoaded?: (scene: THREE.Object3D) => void
+  showBoneOverlay?: boolean
 }
 
-function Scene({ modelUrl }: ViewportProps) {
+type SceneProps = ViewportProps
+
+function Scene({
+  modelUrl,
+  bones,
+  selectedBone,
+  transformMode = 'ROTATE',
+  coordinateSpace = 'LOCAL',
+  hipsLocked = false,
+  onSelectBone,
+  onSceneLoaded,
+  showBoneOverlay = true,
+}: SceneProps) {
   return (
     <>
       {/* Lighting */}
@@ -29,7 +53,30 @@ function Scene({ modelUrl }: ViewportProps) {
       />
 
       {/* Model */}
-      {modelUrl && <ModelRenderer url={modelUrl} />}
+      {modelUrl && (
+        <ModelRenderer url={modelUrl} onSceneLoaded={onSceneLoaded} />
+      )}
+
+      {/* Bone Overlay - visual representation of skeleton */}
+      {bones && (
+        <BoneOverlay
+          bones={bones}
+          selectedBone={selectedBone ?? null}
+          visible={showBoneOverlay}
+          onSelectBone={onSelectBone}
+        />
+      )}
+
+      {/* Transform Gizmo - for manipulating selected bone */}
+      {bones && selectedBone && (
+        <TransformGizmo
+          bones={bones}
+          selectedBone={selectedBone}
+          mode={transformMode}
+          space={coordinateSpace}
+          hipsLocked={hipsLocked}
+        />
+      )}
 
       {/* Camera Controls */}
       <OrbitControls
@@ -39,10 +86,25 @@ function Scene({ modelUrl }: ViewportProps) {
         target={[0, 0.9, 0]}
       />
     </>
-  );
+  )
 }
 
-export function Viewport({ modelUrl }: ViewportProps) {
+export function Viewport({
+  modelUrl,
+  bones,
+  selectedBone,
+  transformMode,
+  coordinateSpace,
+  hipsLocked,
+  onSelectBone,
+  onSceneLoaded,
+  showBoneOverlay,
+}: ViewportProps) {
+  // Handle clicking on empty space to deselect
+  const handlePointerMissed = () => {
+    onSelectBone?.(null)
+  }
+
   return (
     <div className="w-full h-full">
       <Canvas
@@ -53,9 +115,20 @@ export function Viewport({ modelUrl }: ViewportProps) {
           far: 100,
         }}
         shadows
+        onPointerMissed={handlePointerMissed}
       >
-        <Scene modelUrl={modelUrl} />
+        <Scene
+          modelUrl={modelUrl}
+          bones={bones}
+          selectedBone={selectedBone}
+          transformMode={transformMode}
+          coordinateSpace={coordinateSpace}
+          hipsLocked={hipsLocked}
+          onSelectBone={onSelectBone}
+          onSceneLoaded={onSceneLoaded}
+          showBoneOverlay={showBoneOverlay}
+        />
       </Canvas>
     </div>
-  );
+  )
 }

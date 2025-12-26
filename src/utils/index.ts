@@ -15,3 +15,5 @@ export {
 } from './timeline';
 
 export { arrayBufferToBase64, base64ToArrayBuffer } from './serialization';
+
+export { getBoneChildren, isBoneLeaf } from './skeleton';
