@@ -91,24 +91,28 @@ Hips (root)
 - [x] Add PlaybackControls to UI
 - [x] Connect animation loop in viewport (AnimationController.tsx)
 
-### Stage 4: Timeline UI (Phase 5) - NOT STARTED
+### Stage 4: Timeline UI (Phase 5) - FULLY COMPLETED
 
-**Can parallelize 2 agents:**
+**Parallelized 2 agents:**
 
-#### Agent A: Timeline Core
-- [ ] Timeline.tsx main component
-- [ ] TimelineTrack.tsx (time markers, grid)
-- [ ] KeyframeMarker.tsx (diamond/circle markers)
-- [ ] Playhead.tsx (vertical line)
-- [ ] Time labels (0.0s, 0.5s, 1.0s, etc.)
+#### Agent A: Timeline Core - COMPLETED
+- [x] Timeline.tsx main component
+- [x] TimeRuler.tsx (time markers, grid)
+- [x] KeyframeTrack.tsx (keyframe display area)
+- [x] KeyframeMarker.tsx (diamond markers with selection)
+- [x] Playhead.tsx (vertical red line with handle)
+- [x] Time labels (dynamic intervals based on zoom)
 
-#### Agent B: Timeline Interactions
-- [ ] Click timeline to move playhead
-- [ ] Drag keyframes to retime
-- [ ] Drag playhead to scrub
-- [ ] Zoom controls (see 1s to 30s range)
-- [ ] Snap-to-grid (off, 0.05s, 0.1s, 0.25s, 0.5s, 1.0s)
-- [ ] Horizontal scroll when zoomed
+#### Agent B: Timeline Interactions - COMPLETED
+- [x] Click timeline to move playhead
+- [x] Drag keyframes to retime
+- [x] useTimelineDrag hook for smooth dragging
+- [x] useTimelineZoom hook (25, 50, 100, 200, 400 px/s)
+- [x] useTimelineScroll hook for scroll management
+- [x] TimelineControls.tsx (zoom buttons, snap dropdown)
+- [x] Snap-to-grid (off, 0.05s, 0.1s, 0.25s, 0.5s, 1.0s)
+- [x] Horizontal scroll when zoomed
+- [x] timelineUtils.ts with tests
 
 ### Stage 5: Advanced Features (Phases 7, 9, 11) - NOT STARTED
 
@@ -206,6 +210,9 @@ Hips (root)
 - `src/hooks/useClips.ts` - Clip management, active clip switching
 - `src/hooks/usePlayback.ts` - Play/pause/stop, speed, loop modes
 - `src/hooks/useAnimationLoop.ts` - R3F animation frame loop
+- `src/hooks/useTimelineZoom.ts` - Timeline zoom level management
+- `src/hooks/useTimelineDrag.ts` - Timeline drag interactions
+- `src/hooks/useTimelineScroll.ts` - Timeline scroll management
 
 ### Components
 - `src/components/viewport/Viewport.tsx` - Main 3D canvas
@@ -217,6 +224,12 @@ Hips (root)
 - `src/components/panels/ClipListPanel.tsx` - Clip list and management
 - `src/components/panels/ClipPropertiesPanel.tsx` - Active clip properties
 - `src/components/panels/PlaybackControls.tsx` - Play/pause, speed, loop
+- `src/components/timeline/Timeline.tsx` - Main timeline component
+- `src/components/timeline/TimeRuler.tsx` - Time markers and labels
+- `src/components/timeline/KeyframeTrack.tsx` - Keyframe display area
+- `src/components/timeline/KeyframeMarker.tsx` - Individual keyframe marker
+- `src/components/timeline/Playhead.tsx` - Current time indicator
+- `src/components/timeline/TimelineControls.tsx` - Zoom and snap controls
 
 ### Services
 - `src/services/glbLoader.ts` - GLB validation + loading
@@ -226,6 +239,7 @@ Hips (root)
 - `src/utils/math.ts` - quaternionSlerp, vector3Lerp, etc.
 - `src/utils/validation.ts` - validatePascalCase
 - `src/utils/interpolation.ts` - interpolatePoseAtTime, findSurroundingKeyframes
+- `src/utils/timelineUtils.ts` - snapToGrid, pixelsToTime, timeToPixels, getTickInterval
 
 ---
 

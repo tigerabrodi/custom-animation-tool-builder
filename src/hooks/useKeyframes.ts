@@ -11,6 +11,7 @@ export interface KeyframesState {
   addKeyframe: (time: number, bones: Map<BoneName, THREE.Bone>) => string
   deleteKeyframe: (id: string) => void
   updateKeyframe: (id: string, bones: Map<BoneName, THREE.Bone>) => void
+  updateKeyframeTime: (id: string, newTime: number) => void
   selectKeyframe: (id: string | null) => void
   getKeyframeById: (id: string) => Keyframe | undefined
 }
@@ -129,6 +130,23 @@ export function useKeyframes(): KeyframesState {
   )
 
   /**
+   * Updates an existing keyframe's time.
+   * Re-sorts the keyframes after updating.
+   */
+  const updateKeyframeTime = useCallback((id: string, newTime: number) => {
+    setKeyframes((prev) =>
+      sortKeyframes(
+        prev.map((kf) => {
+          if (kf.id === id) {
+            return { ...kf, time: newTime }
+          }
+          return kf
+        })
+      )
+    )
+  }, [])
+
+  /**
    * Selects a keyframe by ID, or clears selection if null is passed.
    */
   const selectKeyframe = useCallback((id: string | null) => {
@@ -151,6 +169,7 @@ export function useKeyframes(): KeyframesState {
     addKeyframe,
     deleteKeyframe,
     updateKeyframe,
+    updateKeyframeTime,
     selectKeyframe,
     getKeyframeById,
   }

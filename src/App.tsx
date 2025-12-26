@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, type ChangeEvent } from 'react'
+import { Suspense, useCallback, useEffect, useState, type ChangeEvent } from 'react'
 import * as THREE from 'three'
 import { BoneTree } from './components/bone-tree'
 import {
@@ -7,12 +7,14 @@ import {
   PlaybackControls,
   TransformPanel,
 } from './components/panels'
+import { Timeline, TimelineControls } from './components/timeline'
 import { Viewport } from './components/viewport/Viewport'
 import { useClips } from './hooks/useClips'
 import { useKeyframes } from './hooks/useKeyframes'
 import { useModelLoader } from './hooks/useModelLoader'
 import { usePlayback } from './hooks/usePlayback'
 import { useSkeletonEditor } from './hooks/useSkeletonEditor'
+import { useTimelineZoom } from './hooks/useTimelineZoom'
 
 function App() {
   const { modelUrl, isLoading, error, loadModel, clearModel } = useModelLoader()
@@ -38,6 +40,8 @@ function App() {
     selectedKeyframeId,
     addKeyframe,
     deleteKeyframe,
+    updateKeyframeTime,
+    selectKeyframe,
   } = useKeyframes()
 
   const {
@@ -61,10 +65,15 @@ function App() {
     play,
     pause,
     stop,
+    setCurrentTime,
     setSpeedMultiplier,
     setLoopMode,
     tick,
   } = usePlayback()
+
+  // Timeline zoom and snap
+  const { zoom, zoomIn, zoomOut } = useTimelineZoom()
+  const [snapInterval, setSnapInterval] = useState<number | null>(null)
 
   // Get active clip data
   const activeClip = getActiveClip()
@@ -74,7 +83,7 @@ function App() {
 
   // Sync keyframes to active clip when they change
   useEffect(() => {
-    if (activeClipId && keyframes.length >= 0) {
+    if (activeClipId) {
       updateClipKeyframes(activeClipId, keyframes)
     }
   }, [activeClipId, keyframes, updateClipKeyframes])
@@ -231,6 +240,33 @@ function App() {
               />
             </Suspense>
           </div>
+
+          {/* Timeline */}
+          {bones && activeClipId && (
+            <div className="border-t border-gray-700">
+              <div className="flex items-center justify-between px-2 py-1 bg-gray-800 border-b border-gray-700">
+                <span className="text-xs text-gray-400">Timeline</span>
+                <TimelineControls
+                  zoom={zoom}
+                  snapInterval={snapInterval}
+                  onZoomIn={zoomIn}
+                  onZoomOut={zoomOut}
+                  onSnapChange={setSnapInterval}
+                />
+              </div>
+              <Timeline
+                duration={activeDuration}
+                currentTime={currentTime}
+                keyframes={activeKeyframes}
+                selectedKeyframeId={selectedKeyframeId}
+                onTimeChange={setCurrentTime}
+                onKeyframeSelect={selectKeyframe}
+                onKeyframeMove={updateKeyframeTime}
+                zoom={zoom}
+                snapInterval={snapInterval}
+              />
+            </div>
+          )}
 
           {/* Playback Controls */}
           {bones && (
