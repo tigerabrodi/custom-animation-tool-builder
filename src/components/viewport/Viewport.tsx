@@ -1,7 +1,14 @@
 import { Grid, OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import * as THREE from 'three'
-import type { BoneName, CoordinateSpace, TransformMode } from '../../types'
+import type {
+  BoneName,
+  CoordinateSpace,
+  InterpolationMode,
+  Keyframe,
+  TransformMode,
+} from '../../types'
+import { AnimationController } from './AnimationController'
 import { BoneOverlay } from './BoneOverlay'
 import { ModelRenderer } from './ModelRenderer'
 import { TransformGizmo } from './TransformGizmo'
@@ -16,6 +23,13 @@ interface ViewportProps {
   onSelectBone?: (bone: BoneName | null) => void
   onSceneLoaded?: (scene: THREE.Object3D) => void
   showBoneOverlay?: boolean
+  // Animation props
+  isPlaying?: boolean
+  currentTime?: number
+  keyframes?: Keyframe[]
+  interpolation?: InterpolationMode
+  duration?: number
+  onTick?: (deltaTime: number, duration: number) => void
 }
 
 type SceneProps = ViewportProps
@@ -30,6 +44,12 @@ function Scene({
   onSelectBone,
   onSceneLoaded,
   showBoneOverlay = true,
+  isPlaying = false,
+  currentTime = 0,
+  keyframes = [],
+  interpolation = 'LINEAR',
+  duration = 0,
+  onTick,
 }: SceneProps) {
   return (
     <>
@@ -78,6 +98,19 @@ function Scene({
         />
       )}
 
+      {/* Animation Controller - handles playback */}
+      {bones && onTick && (
+        <AnimationController
+          bones={bones}
+          isPlaying={isPlaying}
+          currentTime={currentTime}
+          keyframes={keyframes}
+          interpolation={interpolation}
+          duration={duration}
+          tick={onTick}
+        />
+      )}
+
       {/* Camera Controls */}
       <OrbitControls
         makeDefault
@@ -99,6 +132,12 @@ export function Viewport({
   onSelectBone,
   onSceneLoaded,
   showBoneOverlay,
+  isPlaying,
+  currentTime,
+  keyframes,
+  interpolation,
+  duration,
+  onTick,
 }: ViewportProps) {
   // Handle clicking on empty space to deselect
   const handlePointerMissed = () => {
@@ -127,6 +166,12 @@ export function Viewport({
           onSelectBone={onSelectBone}
           onSceneLoaded={onSceneLoaded}
           showBoneOverlay={showBoneOverlay}
+          isPlaying={isPlaying}
+          currentTime={currentTime}
+          keyframes={keyframes}
+          interpolation={interpolation}
+          duration={duration}
+          onTick={onTick}
         />
       </Canvas>
     </div>
