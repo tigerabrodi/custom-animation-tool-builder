@@ -29,12 +29,10 @@ export function usePlayback(): UsePlaybackReturn {
   const [direction, setDirection] = useState<1 | -1>(1)
 
   const play = useCallback(() => {
-    console.log('[usePlayback] play() called')
     setIsPlaying(true)
   }, [])
 
   const pause = useCallback(() => {
-    console.log('[usePlayback] pause() called')
     setIsPlaying(false)
   }, [])
 
@@ -45,7 +43,6 @@ export function usePlayback(): UsePlaybackReturn {
   }, [])
 
   const setCurrentTime = useCallback((time: number) => {
-    console.log('[usePlayback] setCurrentTime called - time:', time)
     setCurrentTimeState(Math.max(0, time))
   }, [])
 
@@ -68,8 +65,6 @@ export function usePlayback(): UsePlaybackReturn {
       // If duration is 0 or negative, just advance time linearly (no looping)
       // This allows playback to work even when all keyframes are at time 0
       const effectiveDuration = duration > 0 ? duration : Infinity
-
-      console.log('[usePlayback] tick - deltaTime:', deltaTime.toFixed(4), 'duration:', duration, 'effectiveDuration:', effectiveDuration, 'currentTime:', currentTime.toFixed(3))
 
       // Calculate the time delta based on speed and direction
       const timeDelta = deltaTime * speedMultiplier * direction

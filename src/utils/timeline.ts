@@ -7,9 +7,9 @@
  */
 export function snapToGrid(time: number, gridSize: number): number {
   if (gridSize <= 0) {
-    return time;
+    return time
   }
-  return Math.round(time / gridSize) * gridSize;
+  return Math.round(time / gridSize) * gridSize
 }
 
 /**
@@ -25,22 +25,22 @@ export function scaleKeyframeTimes<T extends { time: number }>(
   targetDuration: number
 ): T[] {
   if (keyframes.length === 0) {
-    return [];
+    return []
   }
 
-  const currentDuration = getClipDuration(keyframes);
+  const currentDuration = getClipDuration(keyframes)
 
   if (currentDuration === 0) {
     // All keyframes at time 0, return as-is
-    return keyframes.map((kf) => ({ ...kf }));
+    return keyframes.map((kf) => ({ ...kf }))
   }
 
-  const scale = targetDuration / currentDuration;
+  const scale = targetDuration / currentDuration
 
   return keyframes.map((kf) => ({
     ...kf,
     time: kf.time * scale,
-  }));
+  }))
 }
 
 /**
@@ -57,7 +57,7 @@ export function offsetKeyframeTimes<T extends { time: number }>(
   return keyframes.map((kf) => ({
     ...kf,
     time: kf.time + offset,
-  }));
+  }))
 }
 
 /**
@@ -67,10 +67,12 @@ export function offsetKeyframeTimes<T extends { time: number }>(
  * @param keyframes - Array of objects with a time property
  * @returns The duration (maximum time value), or 0 if no keyframes
  */
-export function getClipDuration<T extends { time: number }>(keyframes: T[]): number {
+export function getClipDuration<T extends { time: number }>(
+  keyframes: T[]
+): number {
   if (keyframes.length === 0) {
-    return 0;
+    return 0
   }
 
-  return Math.max(...keyframes.map((kf) => kf.time));
+  return Math.max(...keyframes.map((kf) => kf.time))
 }

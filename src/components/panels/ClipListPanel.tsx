@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Panel } from '../layout/Panel';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import type { AnimationClip } from '../../types/animation';
-import { validatePascalCase } from '../../utils/validation';
+import React, { useState } from 'react'
+import { Panel } from '../layout/Panel'
+import { Button } from '../ui/Button'
+import { Input } from '../ui/Input'
+import type { AnimationClip } from '../../types/animation'
+import { validatePascalCase } from '../../utils/validation'
 
 interface ClipListPanelProps {
-  clips: AnimationClip[];
-  activeClipId: string | null;
-  onSelectClip: (clipId: string | null) => void;
-  onCreateClip: (name: string) => AnimationClip | null;
-  onDuplicateClip: (clipId: string, newName: string) => AnimationClip | null;
-  onDeleteClip: (clipId: string) => boolean;
+  clips: AnimationClip[]
+  activeClipId: string | null
+  onSelectClip: (clipId: string | null) => void
+  onCreateClip: (name: string) => AnimationClip | null
+  onDuplicateClip: (clipId: string, newName: string) => AnimationClip | null
+  onDeleteClip: (clipId: string) => boolean
 }
 
 export const ClipListPanel: React.FC<ClipListPanelProps> = ({
@@ -22,51 +22,53 @@ export const ClipListPanel: React.FC<ClipListPanelProps> = ({
   onDuplicateClip,
   onDeleteClip,
 }) => {
-  const [newClipName, setNewClipName] = useState('');
-  const [showNewClipInput, setShowNewClipInput] = useState(false);
-  const [showDuplicateInput, setShowDuplicateInput] = useState<string | null>(null);
-  const [duplicateName, setDuplicateName] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [newClipName, setNewClipName] = useState('')
+  const [showNewClipInput, setShowNewClipInput] = useState(false)
+  const [showDuplicateInput, setShowDuplicateInput] = useState<string | null>(
+    null
+  )
+  const [duplicateName, setDuplicateName] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   const handleCreateClip = () => {
     if (!validatePascalCase(newClipName)) {
-      setError('Name must be PascalCase (e.g., WalkCycle, IdleAnimation)');
-      return;
+      setError('Name must be PascalCase (e.g., WalkCycle, IdleAnimation)')
+      return
     }
 
-    const result = onCreateClip(newClipName);
+    const result = onCreateClip(newClipName)
     if (result) {
-      setNewClipName('');
-      setShowNewClipInput(false);
-      setError(null);
+      setNewClipName('')
+      setShowNewClipInput(false)
+      setError(null)
     } else {
-      setError('Failed to create clip');
+      setError('Failed to create clip')
     }
-  };
+  }
 
   const handleDuplicateClip = (clipId: string) => {
     if (!validatePascalCase(duplicateName)) {
-      setError('Name must be PascalCase (e.g., WalkCycle, IdleAnimation)');
-      return;
+      setError('Name must be PascalCase (e.g., WalkCycle, IdleAnimation)')
+      return
     }
 
-    const result = onDuplicateClip(clipId, duplicateName);
+    const result = onDuplicateClip(clipId, duplicateName)
     if (result) {
-      setDuplicateName('');
-      setShowDuplicateInput(null);
-      setError(null);
+      setDuplicateName('')
+      setShowDuplicateInput(null)
+      setError(null)
     } else {
-      setError('Failed to duplicate clip');
+      setError('Failed to duplicate clip')
     }
-  };
+  }
 
   const handleDeleteClip = (clipId: string) => {
-    onDeleteClip(clipId);
-  };
+    onDeleteClip(clipId)
+  }
 
   const formatDuration = (duration: number): string => {
-    return `${duration.toFixed(2)}s`;
-  };
+    return `${duration.toFixed(2)}s`
+  }
 
   return (
     <Panel title="Animation Clips" className="h-full">
@@ -77,8 +79,8 @@ export const ClipListPanel: React.FC<ClipListPanelProps> = ({
             size="sm"
             variant="primary"
             onClick={() => {
-              setShowNewClipInput(true);
-              setError(null);
+              setShowNewClipInput(true)
+              setError(null)
             }}
           >
             New Clip
@@ -103,9 +105,9 @@ export const ClipListPanel: React.FC<ClipListPanelProps> = ({
                 size="sm"
                 variant="ghost"
                 onClick={() => {
-                  setShowNewClipInput(false);
-                  setNewClipName('');
-                  setError(null);
+                  setShowNewClipInput(false)
+                  setNewClipName('')
+                  setError(null)
                 }}
               >
                 Cancel
@@ -123,9 +125,9 @@ export const ClipListPanel: React.FC<ClipListPanelProps> = ({
         ) : (
           <div className="flex flex-col gap-2">
             {clips.map((clip) => {
-              const isActive = clip.id === activeClipId;
-              const keyframeCount = clip.keyframes.length;
-              const duration = clip.duration;
+              const isActive = clip.id === activeClipId
+              const keyframeCount = clip.keyframes.length
+              const duration = clip.duration
 
               return (
                 <div key={clip.id} className="flex flex-col gap-1">
@@ -157,7 +159,8 @@ export const ClipListPanel: React.FC<ClipListPanelProps> = ({
                           <span>{formatDuration(duration)}</span>
                           <span className="mx-2">|</span>
                           <span>
-                            {keyframeCount} keyframe{keyframeCount !== 1 ? 's' : ''}
+                            {keyframeCount} keyframe
+                            {keyframeCount !== 1 ? 's' : ''}
                           </span>
                         </div>
                       </div>
@@ -166,10 +169,10 @@ export const ClipListPanel: React.FC<ClipListPanelProps> = ({
                           size="sm"
                           variant="ghost"
                           onClick={(e) => {
-                            e.stopPropagation();
-                            setShowDuplicateInput(clip.id);
-                            setDuplicateName(`${clip.name}Copy`);
-                            setError(null);
+                            e.stopPropagation()
+                            setShowDuplicateInput(clip.id)
+                            setDuplicateName(`${clip.name}Copy`)
+                            setError(null)
                           }}
                         >
                           Duplicate
@@ -178,8 +181,8 @@ export const ClipListPanel: React.FC<ClipListPanelProps> = ({
                           size="sm"
                           variant="danger"
                           onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteClip(clip.id);
+                            e.stopPropagation()
+                            handleDeleteClip(clip.id)
                           }}
                         >
                           Delete
@@ -209,9 +212,9 @@ export const ClipListPanel: React.FC<ClipListPanelProps> = ({
                           size="sm"
                           variant="ghost"
                           onClick={() => {
-                            setShowDuplicateInput(null);
-                            setDuplicateName('');
-                            setError(null);
+                            setShowDuplicateInput(null)
+                            setDuplicateName('')
+                            setError(null)
                           }}
                         >
                           Cancel
@@ -220,13 +223,13 @@ export const ClipListPanel: React.FC<ClipListPanelProps> = ({
                     </div>
                   )}
                 </div>
-              );
+              )
             })}
           </div>
         )}
       </div>
     </Panel>
-  );
-};
+  )
+}
 
-export default ClipListPanel;
+export default ClipListPanel

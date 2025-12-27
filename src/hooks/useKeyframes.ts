@@ -82,20 +82,14 @@ export function useKeyframes(): KeyframesState {
    */
   const addKeyframe = useCallback(
     (time: number, bones: Map<BoneName, THREE.Bone>): string => {
-      console.log('[useKeyframes] addKeyframe called - time:', time, 'bones count:', bones.size)
       const id = crypto.randomUUID()
       const newKeyframe: Keyframe = {
         id,
         time,
         bones: capturePose(bones),
       }
-      console.log('[useKeyframes] addKeyframe - creating keyframe with time:', newKeyframe.time, 'id:', id)
 
-      setKeyframes((prev) => {
-        const newArray = sortKeyframes([...prev, newKeyframe])
-        console.log('[useKeyframes] addKeyframe - prev keyframes:', prev.length, 'new keyframes:', newArray.length, 'all times:', newArray.map(kf => kf.time))
-        return newArray
-      })
+      setKeyframes((prev) => sortKeyframes([...prev, newKeyframe]))
 
       return id
     },
@@ -144,9 +138,8 @@ export function useKeyframes(): KeyframesState {
    * Re-sorts the keyframes after updating.
    */
   const updateKeyframeTime = useCallback((id: string, newTime: number) => {
-    console.log('[useKeyframes] updateKeyframeTime called - id:', id, 'newTime:', newTime)
-    setKeyframes((prev) => {
-      const updated = sortKeyframes(
+    setKeyframes((prev) =>
+      sortKeyframes(
         prev.map((kf) => {
           if (kf.id === id) {
             return { ...kf, time: newTime }
@@ -154,9 +147,7 @@ export function useKeyframes(): KeyframesState {
           return kf
         })
       )
-      console.log('[useKeyframes] updateKeyframeTime - new times:', updated.map(kf => kf.time))
-      return updated
-    })
+    )
   }, [])
 
   /**
@@ -238,7 +229,6 @@ export function useKeyframes(): KeyframesState {
    * Used when switching active clips to load clip's keyframes.
    */
   const replaceKeyframes = useCallback((newKeyframes: Keyframe[]) => {
-    console.log('[useKeyframes] replaceKeyframes called - new count:', newKeyframes.length, 'times:', newKeyframes.map(kf => kf.time))
     setKeyframes(sortKeyframes(newKeyframes))
     setSelectedKeyframeId(null)
   }, [])

@@ -1,18 +1,18 @@
-import React from 'react';
+import React from 'react'
 
 export interface TimelineControlsProps {
   /** Current zoom level in pixels per second */
-  zoom: number;
+  zoom: number
   /** Current snap interval in seconds, or null for no snapping */
-  snapInterval: number | null;
+  snapInterval: number | null
   /** Callback to zoom in */
-  onZoomIn: () => void;
+  onZoomIn: () => void
   /** Callback to zoom out */
-  onZoomOut: () => void;
+  onZoomOut: () => void
   /** Callback when snap interval changes */
-  onSnapChange: (interval: number | null) => void;
+  onSnapChange: (interval: number | null) => void
   /** Optional callback for fit-to-view */
-  onFitToView?: () => void;
+  onFitToView?: () => void
 }
 
 /** Available snap interval options */
@@ -23,14 +23,14 @@ const SNAP_OPTIONS: { label: string; value: number | null }[] = [
   { label: '0.25s', value: 0.25 },
   { label: '0.5s', value: 0.5 },
   { label: '1.0s', value: 1.0 },
-];
+]
 
 /**
  * Converts zoom level (pixels per second) to a percentage for display.
  * Uses 100 px/s as the baseline (100%).
  */
 function zoomToPercent(zoom: number): number {
-  return Math.round((zoom / 100) * 100);
+  return Math.round((zoom / 100) * 100)
 }
 
 /**
@@ -45,13 +45,13 @@ export const TimelineControls: React.FC<TimelineControlsProps> = ({
   onFitToView,
 }) => {
   const handleSnapChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
+    const value = e.target.value
     if (value === 'null') {
-      onSnapChange(null);
+      onSnapChange(null)
     } else {
-      onSnapChange(parseFloat(value));
+      onSnapChange(parseFloat(value))
     }
-  };
+  }
 
   return (
     <div className="flex items-center gap-2">
@@ -109,10 +109,7 @@ export const TimelineControls: React.FC<TimelineControlsProps> = ({
 
       {/* Snap Controls */}
       <div className="flex items-center gap-2">
-        <label
-          htmlFor="snap-select"
-          className="text-sm text-gray-400"
-        >
+        <label htmlFor="snap-select" className="text-sm text-gray-400">
           Snap:
         </label>
         <select
@@ -162,7 +159,7 @@ export const TimelineControls: React.FC<TimelineControlsProps> = ({
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default TimelineControls;
+export default TimelineControls

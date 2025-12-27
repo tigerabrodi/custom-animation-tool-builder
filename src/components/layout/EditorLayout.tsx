@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 
 interface EditorLayoutProps {
-  toolbar: React.ReactNode;
-  leftPanel: React.ReactNode;
-  viewport: React.ReactNode;
-  bottomPanel: React.ReactNode;
-  rightPanel?: React.ReactNode;
+  toolbar: React.ReactNode
+  leftPanel: React.ReactNode
+  viewport: React.ReactNode
+  bottomPanel: React.ReactNode
+  rightPanel?: React.ReactNode
 }
 
 export const EditorLayout: React.FC<EditorLayoutProps> = ({
@@ -32,9 +32,7 @@ export const EditorLayout: React.FC<EditorLayoutProps> = ({
         {/* Center and bottom area */}
         <div className="flex-1 flex flex-col overflow-hidden min-w-0 min-h-0">
           {/* Viewport - fills remaining center space */}
-          <div className="flex-1 overflow-hidden min-h-0">
-            {viewport}
-          </div>
+          <div className="flex-1 overflow-hidden min-h-0">{viewport}</div>
 
           {/* Bottom panel - timeline (~200px) */}
           <div className="flex-shrink-0 h-[200px] border-t border-gray-700 overflow-hidden">
@@ -50,7 +48,7 @@ export const EditorLayout: React.FC<EditorLayoutProps> = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default EditorLayout;
+export default EditorLayout

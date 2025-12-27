@@ -7,18 +7,18 @@
  */
 export function validatePascalCase(name: string): boolean {
   if (name.length === 0) {
-    return false;
+    return false
   }
 
   // Must start with uppercase letter
   if (!/^[A-Z]/.test(name)) {
-    return false;
+    return false
   }
 
   // Must contain only alphanumeric characters
   if (!/^[A-Za-z0-9]+$/.test(name)) {
-    return false;
+    return false
   }
 
-  return true;
+  return true
 }

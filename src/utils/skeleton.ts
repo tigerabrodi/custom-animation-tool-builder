@@ -1,5 +1,5 @@
-import type { BoneName } from '../types';
-import { SKELETON_HIERARCHY, BONE_NAMES } from '../constants/skeleton';
+import type { BoneName } from '../types'
+import { SKELETON_HIERARCHY, BONE_NAMES } from '../constants/skeleton'
 
 /**
  * Get all direct children of a bone in the skeleton hierarchy
@@ -7,9 +7,7 @@ import { SKELETON_HIERARCHY, BONE_NAMES } from '../constants/skeleton';
  * @returns Array of bone names that are direct children of the given bone
  */
 export function getBoneChildren(bone: BoneName): BoneName[] {
-  return BONE_NAMES.filter(
-    (boneName) => SKELETON_HIERARCHY[boneName] === bone
-  );
+  return BONE_NAMES.filter((boneName) => SKELETON_HIERARCHY[boneName] === bone)
 }
 
 /**
@@ -18,5 +16,5 @@ export function getBoneChildren(bone: BoneName): BoneName[] {
  * @returns True if the bone has no children
  */
 export function isBoneLeaf(bone: BoneName): boolean {
-  return getBoneChildren(bone).length === 0;
+  return getBoneChildren(bone).length === 0
 }

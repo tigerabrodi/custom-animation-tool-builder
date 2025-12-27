@@ -108,26 +108,21 @@ function App() {
   const activeClip = getActiveClip()
   const activeInterpolation = activeClip?.interpolation ?? 'LINEAR'
   // Calculate duration directly from keyframes (most up-to-date source)
-  const activeDuration = keyframes.length > 0 ? Math.max(...keyframes.map(kf => kf.time)) : 0
-
-  // DEBUG: Log keyframes and duration on every render
-  console.log('[App] RENDER - keyframes:', keyframes.length, 'times:', keyframes.map(kf => kf.time), 'activeDuration:', activeDuration, 'currentTime:', currentTime)
+  const activeDuration =
+    keyframes.length > 0 ? Math.max(...keyframes.map((kf) => kf.time)) : 0
 
   // Track which clip we last loaded keyframes from
   const lastLoadedClipIdRef = useRef<string | null>(null)
 
   // Load keyframes FROM clip when active clip changes
   useEffect(() => {
-    console.log('[App] EFFECT load FROM clip - activeClipId:', activeClipId, 'lastLoadedClipIdRef:', lastLoadedClipIdRef.current)
     if (activeClipId && activeClipId !== lastLoadedClipIdRef.current) {
       const clip = getActiveClip()
-      console.log('[App] Loading keyframes FROM clip:', clip?.name, 'keyframes:', clip?.keyframes.length, 'times:', clip?.keyframes.map(kf => kf.time))
       if (clip) {
         lastLoadedClipIdRef.current = activeClipId
         setKeyframes(clip.keyframes)
       }
     } else if (!activeClipId) {
-      console.log('[App] Clearing keyframes (no active clip)')
       lastLoadedClipIdRef.current = null
       setKeyframes([])
     }
@@ -135,9 +130,7 @@ function App() {
 
   // Sync keyframes TO active clip when keyframes change (but not during initial load)
   useEffect(() => {
-    console.log('[App] EFFECT sync TO clip - activeClipId:', activeClipId, 'lastLoadedClipIdRef:', lastLoadedClipIdRef.current, 'keyframes:', keyframes.length)
     if (activeClipId && lastLoadedClipIdRef.current === activeClipId) {
-      console.log('[App] Syncing keyframes TO clip - times:', keyframes.map(kf => kf.time))
       updateClipKeyframes(activeClipId, keyframes)
     }
   }, [activeClipId, keyframes, updateClipKeyframes])
@@ -167,13 +160,8 @@ function App() {
 
   // Add keyframe at current playhead time
   const handleAddKeyframe = useCallback(() => {
-    console.log('[App] handleAddKeyframe called - currentTime:', currentTime, 'bones:', !!bones, 'activeClipId:', activeClipId)
-    if (!bones || !activeClipId) {
-      console.log('[App] handleAddKeyframe ABORTED - missing bones or activeClipId')
-      return
-    }
-    const newKeyframeId = addKeyframe(currentTime, bones)
-    console.log('[App] handleAddKeyframe DONE - added keyframe at time:', currentTime, 'newKeyframeId:', newKeyframeId)
+    if (!bones || !activeClipId) return
+    addKeyframe(currentTime, bones)
   }, [bones, activeClipId, currentTime, addKeyframe])
 
   // Delete selected keyframe
@@ -355,17 +343,17 @@ function App() {
           {/* Playback Controls */}
           {bones && (
             <div className="shrink-0">
-            <PlaybackControls
-              isPlaying={isPlaying}
-              currentTime={currentTime}
-              speedMultiplier={speedMultiplier}
-              loopMode={loopMode}
-              onPlay={play}
-              onPause={pause}
-              onStop={stop}
-              onSpeedChange={setSpeedMultiplier}
-              onLoopModeChange={setLoopMode}
-            />
+              <PlaybackControls
+                isPlaying={isPlaying}
+                currentTime={currentTime}
+                speedMultiplier={speedMultiplier}
+                loopMode={loopMode}
+                onPlay={play}
+                onPause={pause}
+                onStop={stop}
+                onSpeedChange={setSpeedMultiplier}
+                onLoopModeChange={setLoopMode}
+              />
             </div>
           )}
         </div>

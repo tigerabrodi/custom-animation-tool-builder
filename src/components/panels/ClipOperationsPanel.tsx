@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Panel } from '../layout/Panel';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
+import React, { useState } from 'react'
+import { Panel } from '../layout/Panel'
+import { Button } from '../ui/Button'
+import { Input } from '../ui/Input'
 
 interface ClipOperationsPanelProps {
-  clipId: string | null;
-  duration: number;
-  onScaleDuration: (clipId: string, factor: number) => void;
-  onOffsetTiming: (clipId: string, offset: number) => void;
-  onReverseClip: (clipId: string) => void;
+  clipId: string | null
+  duration: number
+  onScaleDuration: (clipId: string, factor: number) => void
+  onOffsetTiming: (clipId: string, offset: number) => void
+  onReverseClip: (clipId: string) => void
 }
 
 export const ClipOperationsPanel: React.FC<ClipOperationsPanelProps> = ({
@@ -18,48 +18,48 @@ export const ClipOperationsPanel: React.FC<ClipOperationsPanelProps> = ({
   onOffsetTiming,
   onReverseClip,
 }) => {
-  const [customScale, setCustomScale] = useState<string>('1');
-  const [customOffset, setCustomOffset] = useState<string>('0');
+  const [customScale, setCustomScale] = useState<string>('1')
+  const [customOffset, setCustomOffset] = useState<string>('0')
 
   const formatDuration = (seconds: number): string => {
-    return `${seconds.toFixed(2)}s`;
-  };
+    return `${seconds.toFixed(2)}s`
+  }
 
   const handleScaleClick = (factor: number) => {
     if (clipId) {
-      onScaleDuration(clipId, factor);
+      onScaleDuration(clipId, factor)
     }
-  };
+  }
 
   const handleCustomScale = () => {
     if (clipId) {
-      const factor = parseFloat(customScale);
+      const factor = parseFloat(customScale)
       if (!isNaN(factor) && factor > 0) {
-        onScaleDuration(clipId, factor);
+        onScaleDuration(clipId, factor)
       }
     }
-  };
+  }
 
   const handleOffsetClick = (offset: number) => {
     if (clipId) {
-      onOffsetTiming(clipId, offset);
+      onOffsetTiming(clipId, offset)
     }
-  };
+  }
 
   const handleCustomOffset = () => {
     if (clipId) {
-      const offset = parseFloat(customOffset);
+      const offset = parseFloat(customOffset)
       if (!isNaN(offset)) {
-        onOffsetTiming(clipId, offset);
+        onOffsetTiming(clipId, offset)
       }
     }
-  };
+  }
 
   const handleReverse = () => {
     if (clipId) {
-      onReverseClip(clipId);
+      onReverseClip(clipId)
     }
-  };
+  }
 
   return (
     <Panel title="Clip Operations" className="h-full">
@@ -109,11 +109,7 @@ export const ClipOperationsPanel: React.FC<ClipOperationsPanelProps> = ({
                 placeholder="e.g., 1.5"
                 className="flex-1 min-w-0"
               />
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleCustomScale}
-              >
+              <Button variant="primary" size="sm" onClick={handleCustomScale}>
                 Apply
               </Button>
             </div>
@@ -156,11 +152,7 @@ export const ClipOperationsPanel: React.FC<ClipOperationsPanelProps> = ({
                 placeholder="e.g., -1.5"
                 className="flex-1 min-w-0"
               />
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleCustomOffset}
-              >
+              <Button variant="primary" size="sm" onClick={handleCustomOffset}>
                 Apply
               </Button>
             </div>
@@ -175,18 +167,14 @@ export const ClipOperationsPanel: React.FC<ClipOperationsPanelProps> = ({
               Reverses the timing of all keyframes. The first keyframe becomes
               the last, and vice versa.
             </p>
-            <Button
-              variant="secondary"
-              size="md"
-              onClick={handleReverse}
-            >
+            <Button variant="secondary" size="md" onClick={handleReverse}>
               Reverse Keyframe Order
             </Button>
           </div>
         </div>
       )}
     </Panel>
-  );
-};
+  )
+}
 
-export default ClipOperationsPanel;
+export default ClipOperationsPanel

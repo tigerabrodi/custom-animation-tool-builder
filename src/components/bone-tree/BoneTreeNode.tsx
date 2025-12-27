@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import type { BoneName } from '../../types';
-import { getBoneChildren, isBoneLeaf } from '../../utils/skeleton';
+import React, { useState } from 'react'
+import type { BoneName } from '../../types'
+import { getBoneChildren, isBoneLeaf } from '../../utils/skeleton'
 
 interface BoneTreeNodeProps {
-  boneName: BoneName;
-  selectedBone: BoneName | null;
-  onSelectBone: (bone: BoneName) => void;
-  depth?: number;
+  boneName: BoneName
+  selectedBone: BoneName | null
+  onSelectBone: (bone: BoneName) => void
+  depth?: number
 }
 
 export const BoneTreeNode: React.FC<BoneTreeNodeProps> = ({
@@ -15,23 +15,23 @@ export const BoneTreeNode: React.FC<BoneTreeNodeProps> = ({
   onSelectBone,
   depth = 0,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(true)
 
-  const children = getBoneChildren(boneName);
-  const isLeaf = isBoneLeaf(boneName);
-  const isSelected = selectedBone === boneName;
+  const children = getBoneChildren(boneName)
+  const isLeaf = isBoneLeaf(boneName)
+  const isSelected = selectedBone === boneName
 
   const handleToggleExpand = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsExpanded(!isExpanded);
-  };
+    e.stopPropagation()
+    setIsExpanded(!isExpanded)
+  }
 
   const handleSelectBone = () => {
-    onSelectBone(boneName);
-  };
+    onSelectBone(boneName)
+  }
 
   // Calculate indentation based on depth
-  const indentStyle = { paddingLeft: `${depth * 16}px` };
+  const indentStyle = { paddingLeft: `${depth * 16}px` }
 
   return (
     <div className="select-none">
@@ -40,9 +40,10 @@ export const BoneTreeNode: React.FC<BoneTreeNodeProps> = ({
           flex items-center py-1 px-2 cursor-pointer
           text-sm font-mono
           transition-colors duration-150
-          ${isSelected
-            ? 'bg-blue-600 text-white'
-            : 'text-gray-100 hover:bg-gray-700'
+          ${
+            isSelected
+              ? 'bg-blue-600 text-white'
+              : 'text-gray-100 hover:bg-gray-700'
           }
         `.trim()}
         style={indentStyle}
@@ -60,11 +61,7 @@ export const BoneTreeNode: React.FC<BoneTreeNodeProps> = ({
           aria-label={isExpanded ? 'Collapse' : 'Expand'}
           disabled={isLeaf}
         >
-          <svg
-            className="w-3 h-3"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
               d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -74,10 +71,7 @@ export const BoneTreeNode: React.FC<BoneTreeNodeProps> = ({
         </button>
 
         {/* Bone name */}
-        <span
-          onClick={handleSelectBone}
-          className="flex-1 min-w-0 truncate"
-        >
+        <span onClick={handleSelectBone} className="flex-1 min-w-0 truncate">
           {boneName}
         </span>
       </div>
@@ -97,7 +91,7 @@ export const BoneTreeNode: React.FC<BoneTreeNodeProps> = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default BoneTreeNode;
+export default BoneTreeNode

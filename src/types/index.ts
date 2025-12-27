@@ -1,6 +1,6 @@
-export type { BoneName } from './skeleton';
+export type { BoneName } from './skeleton'
 
-export type { Vector3, Quaternion, EulerAngles } from './math';
+export type { Vector3, Quaternion, EulerAngles } from './math'
 
 export type {
   BoneTransform,
@@ -9,7 +9,7 @@ export type {
   AnimationClip,
   LoopMode,
   PlaybackState,
-} from './animation';
+} from './animation'
 
 export type {
   VisualizationMode,
@@ -18,4 +18,4 @@ export type {
   UIState,
   LoadedModel,
   EditorSession,
-} from './editor';
+} from './editor'

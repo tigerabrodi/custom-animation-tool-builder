@@ -1,12 +1,12 @@
-import React from 'react';
-import type { BoneName } from '../../types';
-import { Panel } from '../layout/Panel';
-import { BoneTreeNode } from './BoneTreeNode';
+import React from 'react'
+import type { BoneName } from '../../types'
+import { Panel } from '../layout/Panel'
+import { BoneTreeNode } from './BoneTreeNode'
 
 interface BoneTreeProps {
-  selectedBone: BoneName | null;
-  onSelectBone: (bone: BoneName) => void;
-  disabled?: boolean;
+  selectedBone: BoneName | null
+  onSelectBone: (bone: BoneName) => void
+  disabled?: boolean
 }
 
 export const BoneTree: React.FC<BoneTreeProps> = ({
@@ -35,7 +35,7 @@ export const BoneTree: React.FC<BoneTreeProps> = ({
         </div>
       )}
     </Panel>
-  );
-};
+  )
+}
 
-export default BoneTree;
+export default BoneTree

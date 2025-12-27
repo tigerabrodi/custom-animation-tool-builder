@@ -1,10 +1,10 @@
-import React from 'react';
+import React from 'react'
 
 interface ToggleProps {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  label?: string;
-  disabled?: boolean;
+  checked: boolean
+  onChange: (checked: boolean) => void
+  label?: string
+  disabled?: boolean
 }
 
 export const Toggle: React.FC<ToggleProps> = ({
@@ -15,18 +15,18 @@ export const Toggle: React.FC<ToggleProps> = ({
 }) => {
   const handleClick = () => {
     if (!disabled) {
-      onChange(!checked);
+      onChange(!checked)
     }
-  };
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
+      e.preventDefault()
       if (!disabled) {
-        onChange(!checked);
+        onChange(!checked)
       }
     }
-  };
+  }
 
   return (
     <div className="flex items-center gap-2">
@@ -63,7 +63,7 @@ export const Toggle: React.FC<ToggleProps> = ({
         </span>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Toggle;
+export default Toggle

@@ -1,2 +1,2 @@
-export { EditorLayout } from './EditorLayout';
-export { Panel } from './Panel';
+export { EditorLayout } from './EditorLayout'
+export { Panel } from './Panel'

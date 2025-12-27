@@ -1,14 +1,14 @@
-import React, { useRef, useEffect } from 'react';
-import type { Keyframe } from '../../types/animation';
+import React, { useRef, useEffect } from 'react'
+import type { Keyframe } from '../../types/animation'
 
 export interface KeyframeMarkerProps {
-  keyframe: Keyframe;
-  isSelected: boolean;
-  pixelsPerSecond: number;
-  onSelect: () => void;
-  onDragStart?: () => void;
-  onDrag?: (deltaX: number) => void;
-  onDragEnd?: () => void;
+  keyframe: Keyframe
+  isSelected: boolean
+  pixelsPerSecond: number
+  onSelect: () => void
+  onDragStart?: () => void
+  onDrag?: (deltaX: number) => void
+  onDragEnd?: () => void
 }
 
 export const KeyframeMarker: React.FC<KeyframeMarkerProps> = ({
@@ -20,74 +20,74 @@ export const KeyframeMarker: React.FC<KeyframeMarkerProps> = ({
   onDrag,
   onDragEnd,
 }) => {
-  const leftPosition = keyframe.time * pixelsPerSecond;
-  const isDraggingRef = useRef(false);
-  const didDragRef = useRef(false); // Track if actual dragging occurred
-  const startXRef = useRef(0);
+  const leftPosition = keyframe.time * pixelsPerSecond
+  const isDraggingRef = useRef(false)
+  const didDragRef = useRef(false) // Track if actual dragging occurred
+  const startXRef = useRef(0)
 
   // Diamond shape size
-  const size = 12;
-  const halfSize = size / 2;
+  const size = 12
+  const halfSize = size / 2
 
   const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation()
     // Only select if we didn't actually drag (click fires after mouseup)
     if (!didDragRef.current) {
-      onSelect();
+      onSelect()
     }
-    didDragRef.current = false;
-  };
+    didDragRef.current = false
+  }
 
   // Store handlers in refs to avoid circular dependencies and stale closures
   const handlersRef = useRef<{
-    move: ((e: MouseEvent) => void) | null;
-    up: (() => void) | null;
-  }>({ move: null, up: null });
+    move: ((e: MouseEvent) => void) | null
+    up: (() => void) | null
+  }>({ move: null, up: null })
 
   // Set up drag handlers
   useEffect(() => {
     const moveHandler = (e: MouseEvent) => {
-      if (!isDraggingRef.current || !onDrag) return;
-      const deltaX = e.clientX - startXRef.current;
+      if (!isDraggingRef.current || !onDrag) return
+      const deltaX = e.clientX - startXRef.current
       // Mark that actual dragging occurred (mouse moved while button down)
       if (Math.abs(deltaX) > 2) {
-        didDragRef.current = true;
+        didDragRef.current = true
       }
-      onDrag(deltaX);
-    };
+      onDrag(deltaX)
+    }
 
     const upHandler = () => {
       if (isDraggingRef.current) {
-        isDraggingRef.current = false;
-        onDragEnd?.();
+        isDraggingRef.current = false
+        onDragEnd?.()
       }
-      document.removeEventListener('mousemove', moveHandler);
-      document.removeEventListener('mouseup', upHandler);
-    };
+      document.removeEventListener('mousemove', moveHandler)
+      document.removeEventListener('mouseup', upHandler)
+    }
 
-    handlersRef.current.move = moveHandler;
-    handlersRef.current.up = upHandler;
+    handlersRef.current.move = moveHandler
+    handlersRef.current.up = upHandler
 
     return () => {
       // Cleanup on unmount
-      document.removeEventListener('mousemove', moveHandler);
-      document.removeEventListener('mouseup', upHandler);
-    };
-  }, [onDrag, onDragEnd]);
+      document.removeEventListener('mousemove', moveHandler)
+      document.removeEventListener('mouseup', upHandler)
+    }
+  }, [onDrag, onDragEnd])
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    isDraggingRef.current = true;
-    startXRef.current = e.clientX;
-    onDragStart?.();
+    e.stopPropagation()
+    e.preventDefault()
+    isDraggingRef.current = true
+    startXRef.current = e.clientX
+    onDragStart?.()
     if (handlersRef.current.move) {
-      document.addEventListener('mousemove', handlersRef.current.move);
+      document.addEventListener('mousemove', handlersRef.current.move)
     }
     if (handlersRef.current.up) {
-      document.addEventListener('mouseup', handlersRef.current.up);
+      document.addEventListener('mouseup', handlersRef.current.up)
     }
-  };
+  }
 
   return (
     <div
@@ -105,9 +105,10 @@ export const KeyframeMarker: React.FC<KeyframeMarkerProps> = ({
       <div
         className={`
           transform rotate-45 transition-all duration-100
-          ${isSelected
-            ? 'bg-cyan-400 ring-2 ring-cyan-300 ring-offset-1 ring-offset-gray-800'
-            : 'bg-amber-500 hover:bg-amber-400 group-hover:ring-1 group-hover:ring-amber-400'
+          ${
+            isSelected
+              ? 'bg-cyan-400 ring-2 ring-cyan-300 ring-offset-1 ring-offset-gray-800'
+              : 'bg-amber-500 hover:bg-amber-400 group-hover:ring-1 group-hover:ring-amber-400'
           }
         `}
         style={{
@@ -125,7 +126,7 @@ export const KeyframeMarker: React.FC<KeyframeMarkerProps> = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default KeyframeMarker;
+export default KeyframeMarker

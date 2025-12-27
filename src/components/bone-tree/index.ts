@@ -1,2 +1,2 @@
-export { BoneTree } from './BoneTree';
-export { BoneTreeNode } from './BoneTreeNode';
+export { BoneTree } from './BoneTree'
+export { BoneTreeNode } from './BoneTreeNode'

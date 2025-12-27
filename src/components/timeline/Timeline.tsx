@@ -1,25 +1,25 @@
-import React, { useRef, useCallback, useState } from 'react';
-import type { Keyframe } from '../../types/animation';
-import { TimeRuler } from './TimeRuler';
-import { KeyframeTrack } from './KeyframeTrack';
-import { Playhead } from './Playhead';
+import React, { useCallback, useRef, useState } from 'react'
+import type { Keyframe } from '../../types/animation'
+import { KeyframeTrack } from './KeyframeTrack'
+import { Playhead } from './Playhead'
+import { TimeRuler } from './TimeRuler'
 
 export interface TimelineProps {
-  duration: number;
-  currentTime: number;
-  keyframes: Keyframe[];
-  selectedKeyframeId: string | null;
-  onTimeChange: (time: number) => void;
-  onKeyframeSelect: (id: string | null) => void;
-  onKeyframeMove: (id: string, newTime: number) => void;
-  zoom?: number;
-  snapInterval?: number | null;
+  duration: number
+  currentTime: number
+  keyframes: Keyframe[]
+  selectedKeyframeId: string | null
+  onTimeChange: (time: number) => void
+  onKeyframeSelect: (id: string | null) => void
+  onKeyframeMove: (id: string, newTime: number) => void
+  zoom?: number
+  snapInterval?: number | null
 }
 
-const TIMELINE_HEIGHT = 120;
-const TIME_RULER_HEIGHT = 24;
-const DEFAULT_ZOOM = 100; // pixels per second
-const MIN_DISPLAY_DURATION = 5; // minimum timeline length in seconds
+const TIMELINE_HEIGHT = 120
+const TIME_RULER_HEIGHT = 24
+const DEFAULT_ZOOM = 100 // pixels per second
+const MIN_DISPLAY_DURATION = 5 // minimum timeline length in seconds
 
 export const Timeline: React.FC<TimelineProps> = ({
   duration,
@@ -33,87 +33,93 @@ export const Timeline: React.FC<TimelineProps> = ({
   snapInterval = null,
 }) => {
   // Use minimum duration for display, but allow extending beyond
-  const displayDuration = Math.max(duration, MIN_DISPLAY_DURATION, currentTime + 1);
+  const displayDuration = Math.max(
+    duration,
+    MIN_DISPLAY_DURATION,
+    currentTime + 1
+  )
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
 
   // Track drag state for keyframe retiming
-  const [draggingKeyframeId, setDraggingKeyframeId] = useState<string | null>(null);
-  const dragStartTimeRef = useRef<number>(0);
+  const [draggingKeyframeId, setDraggingKeyframeId] = useState<string | null>(
+    null
+  )
+  const dragStartTimeRef = useRef<number>(0)
 
   // Snap time value to grid if snap interval is set
   const snapTime = useCallback(
     (time: number): number => {
       if (snapInterval && snapInterval > 0) {
-        return Math.round(time / snapInterval) * snapInterval;
+        return Math.round(time / snapInterval) * snapInterval
       }
-      return time;
+      return time
     },
     [snapInterval]
-  );
+  )
 
   // Clamp time to valid range (allow up to display duration for playhead)
   const clampTime = useCallback(
     (time: number): number => {
-      return Math.max(0, Math.min(displayDuration, time));
+      return Math.max(0, Math.min(displayDuration, time))
     },
     [displayDuration]
-  );
+  )
 
   // Keyframe drag handlers
-  const handleKeyframeDragStart = useCallback((id: string) => {
-    console.log('[Timeline] handleKeyframeDragStart - id:', id)
-    const keyframe = keyframes.find(kf => kf.id === id);
-    if (keyframe) {
-      setDraggingKeyframeId(id);
-      dragStartTimeRef.current = keyframe.time;
-      console.log('[Timeline] handleKeyframeDragStart - started at time:', keyframe.time)
-    }
-  }, [keyframes]);
+  const handleKeyframeDragStart = useCallback(
+    (id: string) => {
+      const keyframe = keyframes.find((kf) => kf.id === id)
+      if (keyframe) {
+        setDraggingKeyframeId(id)
+        dragStartTimeRef.current = keyframe.time
+      }
+    },
+    [keyframes]
+  )
 
-  const handleKeyframeDrag = useCallback((id: string, deltaX: number) => {
-    if (draggingKeyframeId !== id) return;
-    const deltaTime = deltaX / zoom;
-    let newTime = dragStartTimeRef.current + deltaTime;
-    newTime = snapTime(newTime);
-    newTime = clampTime(newTime);
-    console.log('[Timeline] handleKeyframeDrag - id:', id, 'deltaX:', deltaX, 'newTime:', newTime)
-    onKeyframeMove(id, newTime);
-  }, [draggingKeyframeId, zoom, snapTime, clampTime, onKeyframeMove]);
+  const handleKeyframeDrag = useCallback(
+    (id: string, deltaX: number) => {
+      if (draggingKeyframeId !== id) return
+      const deltaTime = deltaX / zoom
+      let newTime = dragStartTimeRef.current + deltaTime
+      newTime = snapTime(newTime)
+      newTime = clampTime(newTime)
+      onKeyframeMove(id, newTime)
+    },
+    [draggingKeyframeId, zoom, snapTime, clampTime, onKeyframeMove]
+  )
 
   const handleKeyframeDragEnd = useCallback(() => {
-    setDraggingKeyframeId(null);
-  }, []);
+    setDraggingKeyframeId(null)
+  }, [])
 
   // Handle click on timeline to set playhead position
   const handleTimelineClick = useCallback(
     (e: React.MouseEvent) => {
-      console.log('[Timeline] handleTimelineClick - target:', (e.target as HTMLElement).className)
       if (!trackRef.current) {
-        console.log('[Timeline] handleTimelineClick ABORTED - no trackRef')
-        return;
+        return
       }
 
-      const rect = trackRef.current.getBoundingClientRect();
-      const scrollLeft = trackRef.current.parentElement?.scrollLeft || 0;
-      const clickX = e.clientX - rect.left + scrollLeft;
-      const time = clickX / zoom;
+      const rect = trackRef.current.getBoundingClientRect()
+      const scrollLeft = trackRef.current.parentElement?.scrollLeft || 0
+      const clickX = e.clientX - rect.left + scrollLeft
+      const time = clickX / zoom
 
-      const snappedTime = snapTime(time);
-      const clampedTime = clampTime(snappedTime);
+      const snappedTime = snapTime(time)
+      const clampedTime = clampTime(snappedTime)
 
-      console.log('[Timeline] handleTimelineClick - clickX:', clickX, 'time:', time, 'snappedTime:', snappedTime, 'clampedTime:', clampedTime)
-      onTimeChange(clampedTime);
+      onTimeChange(clampedTime)
     },
     [zoom, snapTime, clampTime, onTimeChange]
-  );
+  )
 
   // Calculate total content width based on display duration
-  const contentWidth = Math.max(displayDuration * zoom, 100);
+  const contentWidth = Math.max(displayDuration * zoom, 100)
 
   // Track height (total height minus ruler)
-  const trackHeight = TIMELINE_HEIGHT - TIME_RULER_HEIGHT;
+  const trackHeight = TIMELINE_HEIGHT - TIME_RULER_HEIGHT
 
   return (
     <div
@@ -166,17 +172,22 @@ export const Timeline: React.FC<TimelineProps> = ({
 
           {/* Snap grid visualization (subtle lines) */}
           {snapInterval && snapInterval > 0 && (
-            <div className="absolute inset-0 pointer-events-none" style={{ top: TIME_RULER_HEIGHT }}>
-              {Array.from({ length: Math.ceil(displayDuration / snapInterval) + 1 }).map((_, i) => {
-                const time = i * snapInterval;
-                if (time > displayDuration) return null;
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{ top: TIME_RULER_HEIGHT }}
+            >
+              {Array.from({
+                length: Math.ceil(displayDuration / snapInterval) + 1,
+              }).map((_, i) => {
+                const time = i * snapInterval
+                if (time > displayDuration) return null
                 return (
                   <div
                     key={i}
                     className="absolute top-0 bottom-0 w-px bg-gray-600 opacity-30"
                     style={{ transform: `translateX(${time * zoom}px)` }}
                   />
-                );
+                )
               })}
             </div>
           )}
@@ -190,7 +201,7 @@ export const Timeline: React.FC<TimelineProps> = ({
           : 'No keyframes'}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Timeline;
+export default Timeline

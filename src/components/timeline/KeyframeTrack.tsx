@@ -1,16 +1,16 @@
-import React from 'react';
-import type { Keyframe } from '../../types/animation';
-import { KeyframeMarker } from './KeyframeMarker';
+import React from 'react'
+import type { Keyframe } from '../../types/animation'
+import { KeyframeMarker } from './KeyframeMarker'
 
 export interface KeyframeTrackProps {
-  keyframes: Keyframe[];
-  selectedKeyframeId: string | null;
-  pixelsPerSecond: number;
-  duration: number;
-  onKeyframeSelect: (id: string | null) => void;
-  onKeyframeDragStart?: (id: string) => void;
-  onKeyframeDrag?: (id: string, deltaX: number) => void;
-  onKeyframeDragEnd?: (id: string) => void;
+  keyframes: Keyframe[]
+  selectedKeyframeId: string | null
+  pixelsPerSecond: number
+  duration: number
+  onKeyframeSelect: (id: string | null) => void
+  onKeyframeDragStart?: (id: string) => void
+  onKeyframeDrag?: (id: string, deltaX: number) => void
+  onKeyframeDragEnd?: (id: string) => void
 }
 
 export const KeyframeTrack: React.FC<KeyframeTrackProps> = ({
@@ -24,7 +24,7 @@ export const KeyframeTrack: React.FC<KeyframeTrackProps> = ({
   onKeyframeDragEnd,
 }) => {
   // Calculate total width
-  const totalWidth = Math.max(duration * pixelsPerSecond, 100);
+  const totalWidth = Math.max(duration * pixelsPerSecond, 100)
 
   // Handle click on empty track area (deselect keyframe)
   // Note: We do NOT stop propagation here - clicks should bubble up to Timeline
@@ -32,10 +32,10 @@ export const KeyframeTrack: React.FC<KeyframeTrackProps> = ({
   const handleTrackClick = (e: React.MouseEvent) => {
     // Only trigger if clicking directly on the track, not a keyframe
     if (e.target === e.currentTarget) {
-      onKeyframeSelect(null);
+      onKeyframeSelect(null)
     }
     // Let the click bubble up to Timeline's handleTimelineClick
-  };
+  }
 
   return (
     <div
@@ -69,14 +69,12 @@ export const KeyframeTrack: React.FC<KeyframeTrackProps> = ({
               : undefined
           }
           onDragEnd={
-            onKeyframeDragEnd
-              ? () => onKeyframeDragEnd(keyframe.id)
-              : undefined
+            onKeyframeDragEnd ? () => onKeyframeDragEnd(keyframe.id) : undefined
           }
         />
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default KeyframeTrack;
+export default KeyframeTrack

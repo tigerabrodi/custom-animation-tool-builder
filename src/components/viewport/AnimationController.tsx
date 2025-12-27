@@ -1,6 +1,11 @@
 import { useCallback } from 'react'
 import * as THREE from 'three'
-import type { BoneName, BoneTransform, InterpolationMode, Keyframe } from '../../types'
+import type {
+  BoneName,
+  BoneTransform,
+  InterpolationMode,
+  Keyframe,
+} from '../../types'
 import { useAnimationLoop, type Pose } from '../../hooks/useAnimationLoop'
 
 interface AnimationControllerProps {
@@ -36,7 +41,12 @@ export function AnimationController({
         if (bone && transform) {
           const t = transform as BoneTransform
           bone.position.set(t.position.x, t.position.y, t.position.z)
-          bone.quaternion.set(t.rotation.x, t.rotation.y, t.rotation.z, t.rotation.w)
+          bone.quaternion.set(
+            t.rotation.x,
+            t.rotation.y,
+            t.rotation.z,
+            t.rotation.w
+          )
           bone.scale.set(t.scale.x, t.scale.y, t.scale.z)
         }
       })

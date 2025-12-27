@@ -1,4 +1,4 @@
-import type { Vector3, Quaternion } from '../types/math';
+import type { Vector3, Quaternion } from '../types/math'
 
 /**
  * Linearly interpolates between two Vector3 values.
@@ -13,7 +13,7 @@ export function vector3Lerp(a: Vector3, b: Vector3, t: number): Vector3 {
     x: a.x + (b.x - a.x) * t,
     y: a.y + (b.y - a.y) * t,
     z: a.z + (b.z - a.z) * t,
-  };
+  }
 }
 
 /**
@@ -24,7 +24,7 @@ export function vector3Lerp(a: Vector3, b: Vector3, t: number): Vector3 {
  * @returns Dot product
  */
 export function quaternionDot(a: Quaternion, b: Quaternion): number {
-  return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+  return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w
 }
 
 /**
@@ -34,11 +34,11 @@ export function quaternionDot(a: Quaternion, b: Quaternion): number {
  * @returns Normalized quaternion
  */
 export function quaternionNormalize(q: Quaternion): Quaternion {
-  const length = Math.sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+  const length = Math.sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w)
 
   if (length === 0) {
     // Return identity quaternion for zero-length input
-    return { x: 0, y: 0, z: 0, w: 1 };
+    return { x: 0, y: 0, z: 0, w: 1 }
   }
 
   return {
@@ -46,7 +46,7 @@ export function quaternionNormalize(q: Quaternion): Quaternion {
     y: q.y / length,
     z: q.z / length,
     w: q.w / length,
-  };
+  }
 }
 
 /**
@@ -58,52 +58,56 @@ export function quaternionNormalize(q: Quaternion): Quaternion {
  * @param t - Interpolation factor (0 = a, 1 = b)
  * @returns Interpolated quaternion (normalized)
  */
-export function quaternionSlerp(a: Quaternion, b: Quaternion, t: number): Quaternion {
+export function quaternionSlerp(
+  a: Quaternion,
+  b: Quaternion,
+  t: number
+): Quaternion {
   // Compute dot product
-  let dot = quaternionDot(a, b);
+  let dot = quaternionDot(a, b)
 
   // If the dot product is negative, negate one quaternion to take the shorter path
-  let bx = b.x;
-  let by = b.y;
-  let bz = b.z;
-  let bw = b.w;
+  let bx = b.x
+  let by = b.y
+  let bz = b.z
+  let bw = b.w
 
   if (dot < 0) {
-    dot = -dot;
-    bx = -bx;
-    by = -by;
-    bz = -bz;
-    bw = -bw;
+    dot = -dot
+    bx = -bx
+    by = -by
+    bz = -bz
+    bw = -bw
   }
 
   // If the quaternions are very close, use linear interpolation to avoid numerical issues
-  const DOT_THRESHOLD = 0.9995;
+  const DOT_THRESHOLD = 0.9995
   if (dot > DOT_THRESHOLD) {
     const result: Quaternion = {
       x: a.x + (bx - a.x) * t,
       y: a.y + (by - a.y) * t,
       z: a.z + (bz - a.z) * t,
       w: a.w + (bw - a.w) * t,
-    };
-    return quaternionNormalize(result);
+    }
+    return quaternionNormalize(result)
   }
 
   // Compute the angle between the quaternions
-  const theta0 = Math.acos(dot);
-  const theta = theta0 * t;
+  const theta0 = Math.acos(dot)
+  const theta = theta0 * t
 
-  const sinTheta0 = Math.sin(theta0);
-  const sinTheta = Math.sin(theta);
+  const sinTheta0 = Math.sin(theta0)
+  const sinTheta = Math.sin(theta)
 
-  const s0 = Math.cos(theta) - (dot * sinTheta) / sinTheta0;
-  const s1 = sinTheta / sinTheta0;
+  const s0 = Math.cos(theta) - (dot * sinTheta) / sinTheta0
+  const s1 = sinTheta / sinTheta0
 
   return {
     x: a.x * s0 + bx * s1,
     y: a.y * s0 + by * s1,
     z: a.z * s0 + bz * s1,
     w: a.w * s0 + bw * s1,
-  };
+  }
 }
 
 /**
@@ -124,8 +128,8 @@ export function catmullRomInterpolate(
   p3: number,
   t: number
 ): number {
-  const t2 = t * t;
-  const t3 = t2 * t;
+  const t2 = t * t
+  const t3 = t2 * t
 
   // Catmull-Rom spline coefficients
   return (
@@ -134,7 +138,7 @@ export function catmullRomInterpolate(
       (-p0 + p2) * t +
       (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
       (-p0 + 3 * p1 - 3 * p2 + p3) * t3)
-  );
+  )
 }
 
 /**
@@ -158,7 +162,7 @@ export function catmullRomVector3(
     x: catmullRomInterpolate(v0.x, v1.x, v2.x, v3.x, t),
     y: catmullRomInterpolate(v0.y, v1.y, v2.y, v3.y, t),
     z: catmullRomInterpolate(v0.z, v1.z, v2.z, v3.z, t),
-  };
+  }
 }
 
 /**
@@ -174,7 +178,7 @@ export function quaternionMultiply(a: Quaternion, b: Quaternion): Quaternion {
     y: a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
     z: a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
     w: a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,
-  };
+  }
 }
 
 /**
@@ -189,7 +193,7 @@ export function quaternionConjugate(q: Quaternion): Quaternion {
     y: -q.y,
     z: -q.z,
     w: q.w,
-  };
+  }
 }
 
 /**
@@ -205,7 +209,7 @@ export function quaternionScale(q: Quaternion, s: number): Quaternion {
     y: q.y * s,
     z: q.z * s,
     w: q.w * s,
-  };
+  }
 }
 
 /**
@@ -221,7 +225,7 @@ export function quaternionAdd(a: Quaternion, b: Quaternion): Quaternion {
     y: a.y + b.y,
     z: a.z + b.z,
     w: a.w + b.w,
-  };
+  }
 }
 
 /**
@@ -234,22 +238,22 @@ export function quaternionAdd(a: Quaternion, b: Quaternion): Quaternion {
 export function quaternionLog(q: Quaternion): Quaternion {
   // For unit quaternions, q = [cos(theta), sin(theta) * axis]
   // log(q) = [0, theta * axis]
-  const sinAngle = Math.sqrt(q.x * q.x + q.y * q.y + q.z * q.z);
+  const sinAngle = Math.sqrt(q.x * q.x + q.y * q.y + q.z * q.z)
 
   if (sinAngle < 0.0001) {
     // Near identity, return zero quaternion
-    return { x: 0, y: 0, z: 0, w: 0 };
+    return { x: 0, y: 0, z: 0, w: 0 }
   }
 
-  const angle = Math.atan2(sinAngle, q.w);
-  const scale = angle / sinAngle;
+  const angle = Math.atan2(sinAngle, q.w)
+  const scale = angle / sinAngle
 
   return {
     x: q.x * scale,
     y: q.y * scale,
     z: q.z * scale,
     w: 0,
-  };
+  }
 }
 
 /**
@@ -261,22 +265,22 @@ export function quaternionLog(q: Quaternion): Quaternion {
  */
 export function quaternionExp(q: Quaternion): Quaternion {
   // For pure quaternion q = [0, v], exp(q) = [cos(|v|), sin(|v|) * v/|v|]
-  const angle = Math.sqrt(q.x * q.x + q.y * q.y + q.z * q.z);
+  const angle = Math.sqrt(q.x * q.x + q.y * q.y + q.z * q.z)
 
   if (angle < 0.0001) {
     // Near zero, return identity
-    return { x: 0, y: 0, z: 0, w: 1 };
+    return { x: 0, y: 0, z: 0, w: 1 }
   }
 
-  const sinAngle = Math.sin(angle);
-  const scale = sinAngle / angle;
+  const sinAngle = Math.sin(angle)
+  const scale = sinAngle / angle
 
   return {
     x: q.x * scale,
     y: q.y * scale,
     z: q.z * scale,
     w: Math.cos(angle),
-  };
+  }
 }
 
 /**
@@ -294,29 +298,29 @@ export function squadIntermediate(
   qNext: Quaternion
 ): Quaternion {
   // Ensure quaternions are in the same hemisphere as qCurr
-  let prev = qPrev;
-  let next = qNext;
+  let prev = qPrev
+  let next = qNext
 
   if (quaternionDot(qCurr, qPrev) < 0) {
-    prev = { x: -qPrev.x, y: -qPrev.y, z: -qPrev.z, w: -qPrev.w };
+    prev = { x: -qPrev.x, y: -qPrev.y, z: -qPrev.z, w: -qPrev.w }
   }
   if (quaternionDot(qCurr, qNext) < 0) {
-    next = { x: -qNext.x, y: -qNext.y, z: -qNext.z, w: -qNext.w };
+    next = { x: -qNext.x, y: -qNext.y, z: -qNext.z, w: -qNext.w }
   }
 
   // s_i = q_i * exp(-(log(q_i^-1 * q_{i-1}) + log(q_i^-1 * q_{i+1})) / 4)
-  const qCurrInv = quaternionConjugate(qCurr);
-  const logPrev = quaternionLog(quaternionMultiply(qCurrInv, prev));
-  const logNext = quaternionLog(quaternionMultiply(qCurrInv, next));
+  const qCurrInv = quaternionConjugate(qCurr)
+  const logPrev = quaternionLog(quaternionMultiply(qCurrInv, prev))
+  const logNext = quaternionLog(quaternionMultiply(qCurrInv, next))
 
   const sum: Quaternion = {
     x: -(logPrev.x + logNext.x) / 4,
     y: -(logPrev.y + logNext.y) / 4,
     z: -(logPrev.z + logNext.z) / 4,
     w: 0,
-  };
+  }
 
-  return quaternionNormalize(quaternionMultiply(qCurr, quaternionExp(sum)));
+  return quaternionNormalize(quaternionMultiply(qCurr, quaternionExp(sum)))
 }
 
 /**
@@ -338,12 +342,12 @@ export function squadInterpolate(
   t: number
 ): Quaternion {
   // Calculate intermediate control points
-  const s1 = squadIntermediate(q0, q1, q2);
-  const s2 = squadIntermediate(q1, q2, q3);
+  const s1 = squadIntermediate(q0, q1, q2)
+  const s2 = squadIntermediate(q1, q2, q3)
 
   // Squad(q1, q2, s1, s2, t) = slerp(slerp(q1, q2, t), slerp(s1, s2, t), 2t(1-t))
-  const slerpQ = quaternionSlerp(q1, q2, t);
-  const slerpS = quaternionSlerp(s1, s2, t);
+  const slerpQ = quaternionSlerp(q1, q2, t)
+  const slerpS = quaternionSlerp(s1, s2, t)
 
-  return quaternionNormalize(quaternionSlerp(slerpQ, slerpS, 2 * t * (1 - t)));
+  return quaternionNormalize(quaternionSlerp(slerpQ, slerpS, 2 * t * (1 - t)))
 }

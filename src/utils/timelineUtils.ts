@@ -12,9 +12,9 @@
  */
 export function snapToGrid(time: number, interval: number | null): number {
   if (interval === null || interval <= 0) {
-    return time;
+    return time
   }
-  return Math.round(time / interval) * interval;
+  return Math.round(time / interval) * interval
 }
 
 /**
@@ -26,9 +26,9 @@ export function snapToGrid(time: number, interval: number | null): number {
  */
 export function pixelsToTime(pixels: number, pixelsPerSecond: number): number {
   if (pixelsPerSecond <= 0) {
-    return 0;
+    return 0
   }
-  return pixels / pixelsPerSecond;
+  return pixels / pixelsPerSecond
 }
 
 /**
@@ -39,7 +39,7 @@ export function pixelsToTime(pixels: number, pixelsPerSecond: number): number {
  * @returns Pixel position
  */
 export function timeToPixels(time: number, pixelsPerSecond: number): number {
-  return time * pixelsPerSecond;
+  return time * pixelsPerSecond
 }
 
 /**
@@ -50,38 +50,38 @@ export function timeToPixels(time: number, pixelsPerSecond: number): number {
  * @returns Object with major and minor tick intervals in seconds
  */
 export function getTickInterval(pixelsPerSecond: number): {
-  major: number;
-  minor: number;
+  major: number
+  minor: number
 } {
   // Target approximately 100-200 pixels between major ticks
   // and 20-40 pixels between minor ticks
-  const targetMajorPixels = 150;
-  const targetMajorSeconds = targetMajorPixels / pixelsPerSecond;
+  const targetMajorPixels = 150
+  const targetMajorSeconds = targetMajorPixels / pixelsPerSecond
 
   // Snap to nice intervals: 0.1, 0.25, 0.5, 1, 2, 5, 10, etc.
-  const niceIntervals = [0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60];
+  const niceIntervals = [0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60]
 
-  let major = niceIntervals[niceIntervals.length - 1];
+  let major = niceIntervals[niceIntervals.length - 1]
   for (const interval of niceIntervals) {
     if (interval >= targetMajorSeconds) {
-      major = interval;
-      break;
+      major = interval
+      break
     }
   }
 
   // Minor ticks: subdivide major into 2, 4, 5, or 10 parts
-  let minor: number;
+  let minor: number
   if (major >= 10) {
-    minor = major / 10;
+    minor = major / 10
   } else if (major >= 1) {
-    minor = major / 5;
+    minor = major / 5
   } else if (major >= 0.5) {
-    minor = major / 5;
+    minor = major / 5
   } else {
-    minor = major / 5;
+    minor = major / 5
   }
 
-  return { major, minor };
+  return { major, minor }
 }
 
 /**
@@ -98,13 +98,13 @@ export function getVisibleTimeRange(
   pixelsPerSecond: number
 ): { start: number; end: number } {
   if (pixelsPerSecond <= 0) {
-    return { start: 0, end: 0 };
+    return { start: 0, end: 0 }
   }
 
-  const start = scrollLeft / pixelsPerSecond;
-  const end = (scrollLeft + containerWidth) / pixelsPerSecond;
+  const start = scrollLeft / pixelsPerSecond
+  const end = (scrollLeft + containerWidth) / pixelsPerSecond
 
-  return { start, end };
+  return { start, end }
 }
 
 /**
@@ -116,7 +116,7 @@ export function getVisibleTimeRange(
  * @returns The clamped value
  */
 export function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value));
+  return Math.max(min, Math.min(max, value))
 }
 
 /**
@@ -128,9 +128,9 @@ export function clamp(value: number, min: number, max: number): number {
  */
 export function formatTime(time: number, showMinutes = true): string {
   if (showMinutes && time >= 60) {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${minutes}:${seconds.toFixed(1).padStart(4, '0')}`;
+    const minutes = Math.floor(time / 60)
+    const seconds = time % 60
+    return `${minutes}:${seconds.toFixed(1).padStart(4, '0')}`
   }
-  return `${time.toFixed(2)}s`;
+  return `${time.toFixed(2)}s`
 }

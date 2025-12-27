@@ -57,7 +57,8 @@ function Scene({
 }: SceneProps) {
   // Derive visibility from visualization mode
   const showMesh = visualizationMode === 'MESH' || visualizationMode === 'BOTH'
-  const showSkeleton = visualizationMode === 'SKELETON' || visualizationMode === 'BOTH'
+  const showSkeleton =
+    visualizationMode === 'SKELETON' || visualizationMode === 'BOTH'
 
   // Combine showBoneOverlay prop with visualization mode
   const skeletonVisible = showBoneOverlay && showSkeleton
@@ -73,7 +74,11 @@ function Scene({
 
       {/* Model */}
       {modelUrl && (
-        <ModelRenderer url={modelUrl} onSceneLoaded={onSceneLoaded} visible={showMesh} />
+        <ModelRenderer
+          url={modelUrl}
+          onSceneLoaded={onSceneLoaded}
+          visible={showMesh}
+        />
       )}
 
       {/* Bone Overlay - visual representation of skeleton */}

@@ -1,13 +1,13 @@
-import React from 'react';
+import React from 'react'
 
 interface InputProps {
-  value: string | number;
-  onChange: (value: string) => void;
-  type?: 'text' | 'number';
-  label?: string;
-  placeholder?: string;
-  disabled?: boolean;
-  className?: string;
+  value: string | number
+  onChange: (value: string) => void
+  type?: 'text' | 'number'
+  label?: string
+  placeholder?: string
+  disabled?: boolean
+  className?: string
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -20,8 +20,8 @@ export const Input: React.FC<InputProps> = ({
   className = '',
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value);
-  };
+    onChange(e.target.value)
+  }
 
   return (
     <div className={`flex flex-col ${className}`}>
@@ -45,7 +45,7 @@ export const Input: React.FC<InputProps> = ({
         `.trim()}
       />
     </div>
-  );
-};
+  )
+}
 
-export default Input;
+export default Input

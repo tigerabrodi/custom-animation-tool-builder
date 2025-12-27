@@ -63,10 +63,7 @@ describe('scaleKeyframeTimes', () => {
   })
 
   it('should preserve keyframe IDs', () => {
-    const keyframes = [
-      createKeyframe('kf1', 0),
-      createKeyframe('kf2', 1),
-    ]
+    const keyframes = [createKeyframe('kf1', 0), createKeyframe('kf2', 1)]
 
     const result = scaleKeyframeTimes(keyframes, 2)
 
@@ -87,10 +84,7 @@ describe('scaleKeyframeTimes', () => {
   })
 
   it('should return unchanged array for scale factor of 1', () => {
-    const keyframes = [
-      createKeyframe('kf1', 0),
-      createKeyframe('kf2', 1),
-    ]
+    const keyframes = [createKeyframe('kf1', 0), createKeyframe('kf2', 1)]
 
     const result = scaleKeyframeTimes(keyframes, 1)
 
@@ -99,10 +93,7 @@ describe('scaleKeyframeTimes', () => {
   })
 
   it('should return original array for invalid scale factor (0)', () => {
-    const keyframes = [
-      createKeyframe('kf1', 0),
-      createKeyframe('kf2', 1),
-    ]
+    const keyframes = [createKeyframe('kf1', 0), createKeyframe('kf2', 1)]
 
     const result = scaleKeyframeTimes(keyframes, 0)
 
@@ -110,10 +101,7 @@ describe('scaleKeyframeTimes', () => {
   })
 
   it('should return original array for invalid scale factor (negative)', () => {
-    const keyframes = [
-      createKeyframe('kf1', 0),
-      createKeyframe('kf2', 1),
-    ]
+    const keyframes = [createKeyframe('kf1', 0), createKeyframe('kf2', 1)]
 
     const result = scaleKeyframeTimes(keyframes, -1)
 
@@ -192,10 +180,7 @@ describe('offsetKeyframeTimes', () => {
   })
 
   it('should handle zero offset', () => {
-    const keyframes = [
-      createKeyframe('kf1', 0),
-      createKeyframe('kf2', 1),
-    ]
+    const keyframes = [createKeyframe('kf1', 0), createKeyframe('kf2', 1)]
 
     const result = offsetKeyframeTimes(keyframes, 0)
 
@@ -204,10 +189,7 @@ describe('offsetKeyframeTimes', () => {
   })
 
   it('should preserve keyframe IDs', () => {
-    const keyframes = [
-      createKeyframe('kf1', 0),
-      createKeyframe('kf2', 1),
-    ]
+    const keyframes = [createKeyframe('kf1', 0), createKeyframe('kf2', 1)]
 
     const result = offsetKeyframeTimes(keyframes, 1)
 
@@ -250,10 +232,7 @@ describe('offsetKeyframeTimes', () => {
   })
 
   it('should handle fractional offset', () => {
-    const keyframes = [
-      createKeyframe('kf1', 0),
-      createKeyframe('kf2', 1),
-    ]
+    const keyframes = [createKeyframe('kf1', 0), createKeyframe('kf2', 1)]
 
     const result = offsetKeyframeTimes(keyframes, 0.5)
 
@@ -279,10 +258,7 @@ describe('reverseKeyframeTimes', () => {
   })
 
   it('should reverse two keyframes', () => {
-    const keyframes = [
-      createKeyframe('kf1', 0),
-      createKeyframe('kf2', 2),
-    ]
+    const keyframes = [createKeyframe('kf1', 0), createKeyframe('kf2', 2)]
 
     const result = reverseKeyframeTimes(keyframes)
 
@@ -322,10 +298,7 @@ describe('reverseKeyframeTimes', () => {
   })
 
   it('should preserve keyframe IDs', () => {
-    const keyframes = [
-      createKeyframe('kf1', 0),
-      createKeyframe('kf2', 2),
-    ]
+    const keyframes = [createKeyframe('kf1', 0), createKeyframe('kf2', 2)]
 
     const result = reverseKeyframeTimes(keyframes)
 
@@ -363,10 +336,7 @@ describe('reverseKeyframeTimes', () => {
   })
 
   it('should create new array (immutability)', () => {
-    const keyframes = [
-      createKeyframe('kf1', 0),
-      createKeyframe('kf2', 2),
-    ]
+    const keyframes = [createKeyframe('kf1', 0), createKeyframe('kf2', 2)]
 
     const result = reverseKeyframeTimes(keyframes)
 
@@ -429,10 +399,7 @@ describe('calculateDuration', () => {
   })
 
   it('should handle keyframes starting at time 0', () => {
-    const keyframes = [
-      createKeyframe('kf1', 0),
-      createKeyframe('kf2', 0),
-    ]
+    const keyframes = [createKeyframe('kf1', 0), createKeyframe('kf2', 0)]
 
     const result = calculateDuration(keyframes)
 

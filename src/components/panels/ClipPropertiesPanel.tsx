@@ -1,61 +1,61 @@
-import React, { useState } from 'react';
-import { Panel } from '../layout/Panel';
-import { Input } from '../ui/Input';
-import { Select } from '../ui/Select';
-import type { AnimationClip, InterpolationMode } from '../../types/animation';
-import { validatePascalCase } from '../../utils/validation';
+import React, { useState } from 'react'
+import { Panel } from '../layout/Panel'
+import { Input } from '../ui/Input'
+import { Select } from '../ui/Select'
+import type { AnimationClip, InterpolationMode } from '../../types/animation'
+import { validatePascalCase } from '../../utils/validation'
 
 interface ClipPropertiesPanelProps {
-  clip: AnimationClip | null;
-  onRenameClip: (clipId: string, newName: string) => boolean;
-  onSetInterpolation: (clipId: string, mode: InterpolationMode) => boolean;
+  clip: AnimationClip | null
+  onRenameClip: (clipId: string, newName: string) => boolean
+  onSetInterpolation: (clipId: string, mode: InterpolationMode) => boolean
 }
 
 const interpolationOptions = [
   { value: 'LINEAR', label: 'Linear' },
   { value: 'STEP', label: 'Step' },
   { value: 'CUBICSPLINE', label: 'Cubic Spline' },
-];
+]
 
 // Inner component that resets when clip ID changes (via key prop)
 const ClipPropertiesContent: React.FC<{
-  clip: AnimationClip;
-  onRenameClip: (clipId: string, newName: string) => boolean;
-  onSetInterpolation: (clipId: string, mode: InterpolationMode) => boolean;
+  clip: AnimationClip
+  onRenameClip: (clipId: string, newName: string) => boolean
+  onSetInterpolation: (clipId: string, mode: InterpolationMode) => boolean
 }> = ({ clip, onRenameClip, onSetInterpolation }) => {
   // Initialize with the clip's current name - will reset when key changes (new clip)
-  const [editingName, setEditingName] = useState(clip.name);
-  const [nameError, setNameError] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState(clip.name)
+  const [nameError, setNameError] = useState<string | null>(null)
 
   const handleNameBlur = () => {
     // If name hasn't changed, do nothing
     if (editingName === clip.name) {
-      setNameError(null);
-      return;
+      setNameError(null)
+      return
     }
 
     // Validate PascalCase
     if (!validatePascalCase(editingName)) {
-      setNameError('Name must be PascalCase (e.g., WalkCycle)');
-      return;
+      setNameError('Name must be PascalCase (e.g., WalkCycle)')
+      return
     }
 
     // Attempt to rename
-    const success = onRenameClip(clip.id, editingName);
+    const success = onRenameClip(clip.id, editingName)
     if (success) {
-      setNameError(null);
+      setNameError(null)
     } else {
-      setNameError('Failed to rename clip');
+      setNameError('Failed to rename clip')
     }
-  };
+  }
 
   const handleInterpolationChange = (value: string) => {
-    onSetInterpolation(clip.id, value as InterpolationMode);
-  };
+    onSetInterpolation(clip.id, value as InterpolationMode)
+  }
 
   const formatDuration = (duration: number): string => {
-    return `${duration.toFixed(2)} seconds`;
-  };
+    return `${duration.toFixed(2)} seconds`
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -65,8 +65,8 @@ const ClipPropertiesContent: React.FC<{
           label="Name"
           value={editingName}
           onChange={(value) => {
-            setEditingName(value);
-            setNameError(null);
+            setEditingName(value)
+            setNameError(null)
           }}
         />
         {nameError && <p className="text-xs text-red-400">{nameError}</p>}
@@ -121,8 +121,8 @@ const ClipPropertiesContent: React.FC<{
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const ClipPropertiesPanel: React.FC<ClipPropertiesPanelProps> = ({
   clip,
@@ -144,7 +144,7 @@ export const ClipPropertiesPanel: React.FC<ClipPropertiesPanelProps> = ({
         />
       )}
     </Panel>
-  );
-};
+  )
+}
 
-export default ClipPropertiesPanel;
+export default ClipPropertiesPanel

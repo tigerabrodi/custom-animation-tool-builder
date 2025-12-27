@@ -177,13 +177,7 @@ function interpolateBoneTransformCubic(
       t3.rotation,
       factor
     ),
-    scale: catmullRomVector3(
-      t0.scale,
-      t1.scale,
-      t2.scale,
-      t3.scale,
-      factor
-    ),
+    scale: catmullRomVector3(t0.scale, t1.scale, t2.scale, t3.scale, factor),
   }
 }
 

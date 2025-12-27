@@ -48,7 +48,10 @@ export function BoneOverlay({
   } = useMemo(() => {
     const lineGeo = new THREE.BufferGeometry()
     // Pre-allocate for max possible lines (24 bones)
-    const positionAttribute = new THREE.Float32BufferAttribute(linePositionsRef.current, 3)
+    const positionAttribute = new THREE.Float32BufferAttribute(
+      linePositionsRef.current,
+      3
+    )
     positionAttribute.setUsage(THREE.DynamicDrawUsage)
     lineGeo.setAttribute('position', positionAttribute)
 

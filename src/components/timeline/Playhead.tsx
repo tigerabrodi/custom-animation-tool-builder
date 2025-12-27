@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 
 export interface PlayheadProps {
-  currentTime: number;
-  pixelsPerSecond: number;
-  height: number;
+  currentTime: number
+  pixelsPerSecond: number
+  height: number
 }
 
 export const Playhead: React.FC<PlayheadProps> = ({
@@ -11,7 +11,7 @@ export const Playhead: React.FC<PlayheadProps> = ({
   pixelsPerSecond,
   height,
 }) => {
-  const leftPosition = currentTime * pixelsPerSecond;
+  const leftPosition = currentTime * pixelsPerSecond
 
   return (
     <div
@@ -22,16 +22,8 @@ export const Playhead: React.FC<PlayheadProps> = ({
       }}
     >
       {/* Triangle handle at top */}
-      <div
-        className="absolute -translate-x-1/2"
-        style={{ top: 0 }}
-      >
-        <svg
-          width="12"
-          height="8"
-          viewBox="0 0 12 8"
-          className="fill-red-500"
-        >
+      <div className="absolute -translate-x-1/2" style={{ top: 0 }}>
+        <svg width="12" height="8" viewBox="0 0 12 8" className="fill-red-500">
           <polygon points="0,0 12,0 6,8" />
         </svg>
       </div>
@@ -46,7 +38,7 @@ export const Playhead: React.FC<PlayheadProps> = ({
         }}
       />
     </div>
-  );
-};
+  )
+}
 
-export default Playhead;
+export default Playhead

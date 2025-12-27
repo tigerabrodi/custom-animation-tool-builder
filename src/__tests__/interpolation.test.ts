@@ -438,14 +438,23 @@ describe('interpolatePoseAtTime', () => {
       // Cubic interpolation should produce smooth intermediate values
       // The x values should be increasing from 0 to 10
       expect(samples[0]!.Hips.position.x).toBeGreaterThan(0)
-      expect(samples[1]!.Hips.position.x).toBeGreaterThan(samples[0]!.Hips.position.x)
-      expect(samples[2]!.Hips.position.x).toBeGreaterThan(samples[1]!.Hips.position.x)
+      expect(samples[1]!.Hips.position.x).toBeGreaterThan(
+        samples[0]!.Hips.position.x
+      )
+      expect(samples[2]!.Hips.position.x).toBeGreaterThan(
+        samples[1]!.Hips.position.x
+      )
     })
 
     it('should maintain unit quaternions during squad interpolation', () => {
       // Different rotations at each keyframe
       const keyframes: Keyframe[] = [
-        createKeyframe('kf1', 0, 'Hips', createBoneTransform(0, 0, 0, 0, 0, 0, 1)),
+        createKeyframe(
+          'kf1',
+          0,
+          'Hips',
+          createBoneTransform(0, 0, 0, 0, 0, 0, 1)
+        ),
         createKeyframe(
           'kf2',
           1.0,

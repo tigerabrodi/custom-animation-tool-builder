@@ -1,17 +1,17 @@
-import React from 'react';
+import React from 'react'
 
 interface SelectOption {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 interface SelectProps {
-  value: string;
-  onChange: (value: string) => void;
-  options: SelectOption[];
-  label?: string;
-  disabled?: boolean;
-  className?: string;
+  value: string
+  onChange: (value: string) => void
+  options: SelectOption[]
+  label?: string
+  disabled?: boolean
+  className?: string
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -23,8 +23,8 @@ export const Select: React.FC<SelectProps> = ({
   className = '',
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(e.target.value);
-  };
+    onChange(e.target.value)
+  }
 
   return (
     <div className={`flex flex-col ${className}`}>
@@ -56,7 +56,7 @@ export const Select: React.FC<SelectProps> = ({
         ))}
       </select>
     </div>
-  );
-};
+  )
+}
 
-export default Select;
+export default Select
