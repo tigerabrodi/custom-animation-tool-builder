@@ -17,6 +17,7 @@ export interface KeyframesState {
   duplicateKeyframe: (id: string, newTime: number) => string | null
   updateKeyframeLabel: (id: string, label: string | undefined) => void
   getKeyframeTimes: () => number[]
+  setKeyframes: (keyframes: Keyframe[]) => void
 }
 
 /**
@@ -81,14 +82,20 @@ export function useKeyframes(): KeyframesState {
    */
   const addKeyframe = useCallback(
     (time: number, bones: Map<BoneName, THREE.Bone>): string => {
+      console.log('[useKeyframes] addKeyframe called - time:', time, 'bones count:', bones.size)
       const id = crypto.randomUUID()
       const newKeyframe: Keyframe = {
         id,
         time,
         bones: capturePose(bones),
       }
+      console.log('[useKeyframes] addKeyframe - creating keyframe with time:', newKeyframe.time, 'id:', id)
 
-      setKeyframes((prev) => sortKeyframes([...prev, newKeyframe]))
+      setKeyframes((prev) => {
+        const newArray = sortKeyframes([...prev, newKeyframe])
+        console.log('[useKeyframes] addKeyframe - prev keyframes:', prev.length, 'new keyframes:', newArray.length, 'all times:', newArray.map(kf => kf.time))
+        return newArray
+      })
 
       return id
     },
@@ -137,8 +144,9 @@ export function useKeyframes(): KeyframesState {
    * Re-sorts the keyframes after updating.
    */
   const updateKeyframeTime = useCallback((id: string, newTime: number) => {
-    setKeyframes((prev) =>
-      sortKeyframes(
+    console.log('[useKeyframes] updateKeyframeTime called - id:', id, 'newTime:', newTime)
+    setKeyframes((prev) => {
+      const updated = sortKeyframes(
         prev.map((kf) => {
           if (kf.id === id) {
             return { ...kf, time: newTime }
@@ -146,7 +154,9 @@ export function useKeyframes(): KeyframesState {
           return kf
         })
       )
-    )
+      console.log('[useKeyframes] updateKeyframeTime - new times:', updated.map(kf => kf.time))
+      return updated
+    })
   }, [])
 
   /**
@@ -223,6 +233,16 @@ export function useKeyframes(): KeyframesState {
     return keyframes.map((kf) => kf.time)
   }, [keyframes])
 
+  /**
+   * Replaces all keyframes with a new array.
+   * Used when switching active clips to load clip's keyframes.
+   */
+  const replaceKeyframes = useCallback((newKeyframes: Keyframe[]) => {
+    console.log('[useKeyframes] replaceKeyframes called - new count:', newKeyframes.length, 'times:', newKeyframes.map(kf => kf.time))
+    setKeyframes(sortKeyframes(newKeyframes))
+    setSelectedKeyframeId(null)
+  }, [])
+
   return {
     keyframes,
     selectedKeyframeId,
@@ -235,5 +255,6 @@ export function useKeyframes(): KeyframesState {
     duplicateKeyframe,
     updateKeyframeLabel,
     getKeyframeTimes,
+    setKeyframes: replaceKeyframes,
   }
 }

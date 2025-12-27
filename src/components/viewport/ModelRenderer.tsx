@@ -1,5 +1,5 @@
 import { useGLTF } from '@react-three/drei';
-import { useEffect } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import type * as THREE from 'three';
 
 interface ModelRendererProps {
@@ -8,21 +8,31 @@ interface ModelRendererProps {
   visible?: boolean;
 }
 
-export function ModelRenderer({ url, onSceneLoaded, visible = true }: ModelRendererProps) {
+export const ModelRenderer = memo(function ModelRenderer({
+  url,
+  onSceneLoaded,
+  visible = true
+}: ModelRendererProps) {
   const { scene } = useGLTF(url);
+  const initializedRef = useRef(false);
 
   useEffect(() => {
-    // Center the model at origin
-    scene.position.set(0, 0, 0);
-
-    // Notify parent that scene is loaded
-    onSceneLoaded?.(scene);
+    if (!initializedRef.current && scene) {
+      initializedRef.current = true;
+      onSceneLoaded?.(scene);
+    }
   }, [scene, onSceneLoaded]);
 
-  // Wrap in a group to control visibility without mutating scene
+  // Reset when URL changes
+  useEffect(() => {
+    initializedRef.current = false;
+  }, [url]);
+
   return (
     <group visible={visible}>
       <primitive object={scene} />
     </group>
   );
-}
+}, (prevProps, nextProps) => {
+  return prevProps.url === nextProps.url && prevProps.visible === nextProps.visible;
+});

@@ -23,7 +23,7 @@ export const Panel: React.FC<PanelProps> = ({
         <h3 className="text-sm font-semibold text-gray-100">{title}</h3>
       </div>
       {/* Scrollable content area */}
-      <div className="flex-1 overflow-auto p-3">
+      <div className="flex-1 overflow-auto p-3 min-h-0">
         {children}
       </div>
     </div>

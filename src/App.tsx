@@ -1,6 +1,14 @@
-import { Suspense, useCallback, useEffect, useState, type ChangeEvent } from 'react'
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+} from 'react'
 import * as THREE from 'three'
 import { BoneTree } from './components/bone-tree'
+import { ExportDialog } from './components/dialogs'
 import {
   ClipListPanel,
   ClipOperationsPanel,
@@ -20,7 +28,16 @@ import { useTimelineZoom } from './hooks/useTimelineZoom'
 import { useVisualization } from './hooks/useVisualization'
 
 function App() {
-  const { modelUrl, isLoading, error, loadModel, clearModel } = useModelLoader()
+  const {
+    modelUrl,
+    modelData,
+    modelFileName,
+    isLoading,
+    error,
+    loadModel,
+    clearModel,
+  } = useModelLoader()
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false)
   const {
     bones,
     selectedBone,
@@ -45,6 +62,7 @@ function App() {
     deleteKeyframe,
     updateKeyframeTime,
     selectKeyframe,
+    setKeyframes,
   } = useKeyframes()
 
   const {
@@ -54,6 +72,7 @@ function App() {
     duplicateClip,
     renameClip,
     deleteClip,
+    clearAllClips,
     setActiveClip,
     getActiveClip,
     updateClipKeyframes,
@@ -82,17 +101,43 @@ function App() {
   const [snapInterval, setSnapInterval] = useState<number | null>(null)
 
   // Visualization mode
-  const { mode: visualizationMode, setMode: setVisualizationMode } = useVisualization()
+  const { mode: visualizationMode, setMode: setVisualizationMode } =
+    useVisualization()
 
   // Get active clip data
   const activeClip = getActiveClip()
-  const activeKeyframes = activeClip?.keyframes ?? []
   const activeInterpolation = activeClip?.interpolation ?? 'LINEAR'
-  const activeDuration = activeClip?.duration ?? 0
+  // Calculate duration directly from keyframes (most up-to-date source)
+  const activeDuration = keyframes.length > 0 ? Math.max(...keyframes.map(kf => kf.time)) : 0
 
-  // Sync keyframes to active clip when they change
+  // DEBUG: Log keyframes and duration on every render
+  console.log('[App] RENDER - keyframes:', keyframes.length, 'times:', keyframes.map(kf => kf.time), 'activeDuration:', activeDuration, 'currentTime:', currentTime)
+
+  // Track which clip we last loaded keyframes from
+  const lastLoadedClipIdRef = useRef<string | null>(null)
+
+  // Load keyframes FROM clip when active clip changes
   useEffect(() => {
-    if (activeClipId) {
+    console.log('[App] EFFECT load FROM clip - activeClipId:', activeClipId, 'lastLoadedClipIdRef:', lastLoadedClipIdRef.current)
+    if (activeClipId && activeClipId !== lastLoadedClipIdRef.current) {
+      const clip = getActiveClip()
+      console.log('[App] Loading keyframes FROM clip:', clip?.name, 'keyframes:', clip?.keyframes.length, 'times:', clip?.keyframes.map(kf => kf.time))
+      if (clip) {
+        lastLoadedClipIdRef.current = activeClipId
+        setKeyframes(clip.keyframes)
+      }
+    } else if (!activeClipId) {
+      console.log('[App] Clearing keyframes (no active clip)')
+      lastLoadedClipIdRef.current = null
+      setKeyframes([])
+    }
+  }, [activeClipId, getActiveClip, setKeyframes])
+
+  // Sync keyframes TO active clip when keyframes change (but not during initial load)
+  useEffect(() => {
+    console.log('[App] EFFECT sync TO clip - activeClipId:', activeClipId, 'lastLoadedClipIdRef:', lastLoadedClipIdRef.current, 'keyframes:', keyframes.length)
+    if (activeClipId && lastLoadedClipIdRef.current === activeClipId) {
+      console.log('[App] Syncing keyframes TO clip - times:', keyframes.map(kf => kf.time))
       updateClipKeyframes(activeClipId, keyframes)
     }
   }, [activeClipId, keyframes, updateClipKeyframes])
@@ -107,8 +152,11 @@ function App() {
   const handleClearModel = useCallback(() => {
     clearModel()
     setSelectedBone(null)
+    clearAllClips()
+    setKeyframes([])
+    lastLoadedClipIdRef.current = null
     stop()
-  }, [clearModel, setSelectedBone, stop])
+  }, [clearModel, setSelectedBone, clearAllClips, setKeyframes, stop])
 
   const handleSceneLoaded = useCallback(
     (scene: THREE.Object3D) => {
@@ -119,8 +167,13 @@ function App() {
 
   // Add keyframe at current playhead time
   const handleAddKeyframe = useCallback(() => {
-    if (!bones || !activeClipId) return
-    addKeyframe(currentTime, bones)
+    console.log('[App] handleAddKeyframe called - currentTime:', currentTime, 'bones:', !!bones, 'activeClipId:', activeClipId)
+    if (!bones || !activeClipId) {
+      console.log('[App] handleAddKeyframe ABORTED - missing bones or activeClipId')
+      return
+    }
+    const newKeyframeId = addKeyframe(currentTime, bones)
+    console.log('[App] handleAddKeyframe DONE - added keyframe at time:', currentTime, 'newKeyframeId:', newKeyframeId)
   }, [bones, activeClipId, currentTime, addKeyframe])
 
   // Delete selected keyframe
@@ -162,6 +215,16 @@ function App() {
             className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors text-sm"
           >
             Clear Model
+          </button>
+        )}
+
+        {/* Export button */}
+        {modelUrl && clips.length > 0 && (
+          <button
+            onClick={() => setIsExportDialogOpen(true)}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors text-sm"
+          >
+            Export GLB
           </button>
         )}
 
@@ -209,10 +272,10 @@ function App() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden min-h-0">
         {/* Left Panel - Bone Tree + Clips */}
-        <div className="w-64 border-r border-gray-700 flex flex-col shrink-0">
-          <div className="flex-1 overflow-y-auto">
+        <div className="w-64 border-r border-gray-700 flex flex-col shrink-0 min-h-0">
+          <div className="flex-1 overflow-y-auto min-h-0">
             <BoneTree
               selectedBone={selectedBone}
               onSelectBone={setSelectedBone}
@@ -232,8 +295,8 @@ function App() {
         </div>
 
         {/* Center - Viewport */}
-        <div className="flex-1 flex flex-col">
-          <div className="flex-1 relative">
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 relative min-h-0">
             <Suspense
               fallback={
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -254,7 +317,7 @@ function App() {
                 visualizationMode={visualizationMode}
                 isPlaying={isPlaying}
                 currentTime={currentTime}
-                keyframes={activeKeyframes}
+                keyframes={keyframes}
                 interpolation={activeInterpolation}
                 duration={activeDuration}
                 onTick={tick}
@@ -264,7 +327,7 @@ function App() {
 
           {/* Timeline */}
           {bones && activeClipId && (
-            <div className="border-t border-gray-700">
+            <div className="border-t border-gray-700 shrink-0">
               <div className="flex items-center justify-between px-2 py-1 bg-gray-800 border-b border-gray-700">
                 <span className="text-xs text-gray-400">Timeline</span>
                 <TimelineControls
@@ -278,7 +341,7 @@ function App() {
               <Timeline
                 duration={activeDuration}
                 currentTime={currentTime}
-                keyframes={activeKeyframes}
+                keyframes={keyframes}
                 selectedKeyframeId={selectedKeyframeId}
                 onTimeChange={setCurrentTime}
                 onKeyframeSelect={selectKeyframe}
@@ -291,6 +354,7 @@ function App() {
 
           {/* Playback Controls */}
           {bones && (
+            <div className="shrink-0">
             <PlaybackControls
               isPlaying={isPlaying}
               currentTime={currentTime}
@@ -302,12 +366,13 @@ function App() {
               onSpeedChange={setSpeedMultiplier}
               onLoopModeChange={setLoopMode}
             />
+            </div>
           )}
         </div>
 
         {/* Right Panel - Transform + Clip Properties */}
-        <div className="w-72 border-l border-gray-700 flex flex-col shrink-0">
-          <div className="flex-1 overflow-y-auto">
+        <div className="w-72 border-l border-gray-700 flex flex-col shrink-0 min-h-0">
+          <div className="flex-1 overflow-y-auto min-h-0">
             <TransformPanel
               selectedBone={selectedBone}
               transformMode={transformMode}
@@ -341,6 +406,15 @@ function App() {
           )}
         </div>
       </div>
+
+      {/* Export Dialog */}
+      <ExportDialog
+        isOpen={isExportDialogOpen}
+        onClose={() => setIsExportDialogOpen(false)}
+        clips={clips}
+        originalGlbData={modelData}
+        originalFileName={modelFileName}
+      />
     </div>
   )
 }

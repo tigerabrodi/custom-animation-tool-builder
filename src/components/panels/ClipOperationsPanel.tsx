@@ -107,7 +107,7 @@ export const ClipOperationsPanel: React.FC<ClipOperationsPanelProps> = ({
                 value={customScale}
                 onChange={(value) => setCustomScale(value)}
                 placeholder="e.g., 1.5"
-                className="flex-1"
+                className="flex-1 min-w-0"
               />
               <Button
                 variant="primary"
@@ -154,7 +154,7 @@ export const ClipOperationsPanel: React.FC<ClipOperationsPanelProps> = ({
                 value={customOffset}
                 onChange={(value) => setCustomOffset(value)}
                 placeholder="e.g., -1.5"
-                className="flex-1"
+                className="flex-1 min-w-0"
               />
               <Button
                 variant="primary"

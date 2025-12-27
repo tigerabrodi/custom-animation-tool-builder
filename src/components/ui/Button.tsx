@@ -1,12 +1,12 @@
-import React from 'react';
+import React from 'react'
 
 interface ButtonProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
-  className?: string;
+  children: React.ReactNode
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
+  size?: 'sm' | 'md' | 'lg'
+  disabled?: boolean
+  className?: string
 }
 
 const variantStyles = {
@@ -18,13 +18,13 @@ const variantStyles = {
     'bg-transparent text-gray-100 hover:bg-gray-700 active:bg-gray-800 disabled:text-gray-500',
   danger:
     'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 disabled:bg-red-400',
-};
+}
 
 const sizeStyles = {
   sm: 'px-2 py-1 text-sm',
   md: 'px-4 py-2 text-base',
   lg: 'px-6 py-3 text-lg',
-};
+}
 
 export const Button: React.FC<ButtonProps> = ({
   children,
@@ -49,7 +49,7 @@ export const Button: React.FC<ButtonProps> = ({
     >
       {children}
     </button>
-  );
-};
+  )
+}
 
-export default Button;
+export default Button

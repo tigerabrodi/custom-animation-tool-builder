@@ -27,16 +27,19 @@ export const KeyframeTrack: React.FC<KeyframeTrackProps> = ({
   const totalWidth = Math.max(duration * pixelsPerSecond, 100);
 
   // Handle click on empty track area (deselect keyframe)
+  // Note: We do NOT stop propagation here - clicks should bubble up to Timeline
+  // so that clicking the track also moves the playhead
   const handleTrackClick = (e: React.MouseEvent) => {
     // Only trigger if clicking directly on the track, not a keyframe
     if (e.target === e.currentTarget) {
       onKeyframeSelect(null);
     }
+    // Let the click bubble up to Timeline's handleTimelineClick
   };
 
   return (
     <div
-      className="relative bg-gray-700 flex-1"
+      className="relative bg-gray-700 h-full"
       style={{ minWidth: totalWidth }}
       onClick={handleTrackClick}
     >

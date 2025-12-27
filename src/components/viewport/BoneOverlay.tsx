@@ -34,6 +34,9 @@ export function BoneOverlay({
   const worldPosRef = useRef(new THREE.Vector3())
   const parentPosRef = useRef(new THREE.Vector3())
 
+  // Pre-allocate line positions array (24 bones * 2 endpoints * 3 components)
+  const linePositionsRef = useRef(new Float32Array(24 * 6))
+
   // Create geometries and materials once
   const {
     selectedGeometry,
@@ -45,10 +48,9 @@ export function BoneOverlay({
   } = useMemo(() => {
     const lineGeo = new THREE.BufferGeometry()
     // Pre-allocate for max possible lines (24 bones)
-    lineGeo.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(new Float32Array(24 * 6), 3)
-    )
+    const positionAttribute = new THREE.Float32BufferAttribute(linePositionsRef.current, 3)
+    positionAttribute.setUsage(THREE.DynamicDrawUsage)
+    lineGeo.setAttribute('position', positionAttribute)
 
     return {
       selectedGeometry: new THREE.SphereGeometry(
@@ -79,9 +81,28 @@ export function BoneOverlay({
     }
   }, [])
 
+  // Track if we've done initial update (bones need one frame to compute world matrices)
+  const initializedRef = useRef(false)
+  const lastBonesRef = useRef<Map<BoneName, THREE.Bone> | null>(null)
+
   // Update sphere positions each frame to follow bone animations
   useFrame(() => {
+    // Reset initialization flag if bones changed
+    if (bones !== lastBonesRef.current) {
+      initializedRef.current = false
+      lastBonesRef.current = bones
+    }
     if (!bones || !visible) return
+
+    // Skip first frame to let Three.js compute world matrices
+    if (!initializedRef.current) {
+      initializedRef.current = true
+      // Force matrix world update on first frame
+      bones.forEach((bone) => {
+        bone.updateWorldMatrix(true, true)
+      })
+      return
+    }
 
     const worldPos = worldPosRef.current
     const parentPos = parentPosRef.current
@@ -100,9 +121,10 @@ export function BoneOverlay({
       }
     })
 
-    // Update line positions
+    // Update line positions in place (reuse pre-allocated array)
     if (lineRef.current && lineRef.current.geometry) {
-      const positions: number[] = []
+      const positions = linePositionsRef.current
+      let index = 0
 
       bones.forEach((bone, boneName) => {
         const parentName = SKELETON_HIERARCHY[boneName]
@@ -112,17 +134,19 @@ export function BoneOverlay({
             bone.getWorldPosition(worldPos)
             parentBone.getWorldPosition(parentPos)
 
-            positions.push(worldPos.x, worldPos.y, worldPos.z)
-            positions.push(parentPos.x, parentPos.y, parentPos.z)
+            positions[index++] = worldPos.x
+            positions[index++] = worldPos.y
+            positions[index++] = worldPos.z
+            positions[index++] = parentPos.x
+            positions[index++] = parentPos.y
+            positions[index++] = parentPos.z
           }
         }
       })
 
+      // Update draw range to only render actual lines
       const geometry = lineRef.current.geometry
-      geometry.setAttribute(
-        'position',
-        new THREE.Float32BufferAttribute(positions, 3)
-      )
+      geometry.setDrawRange(0, index / 3)
       geometry.attributes.position.needsUpdate = true
     }
   })

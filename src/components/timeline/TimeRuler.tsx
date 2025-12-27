@@ -64,7 +64,7 @@ export const TimeRuler: React.FC<TimeRulerProps> = ({
 
   return (
     <div
-      className="relative bg-gray-800 border-b border-gray-700 select-none"
+      className="relative bg-gray-800 border-b border-gray-700 select-none pointer-events-none"
       style={{ height, minWidth: totalWidth }}
     >
       {ticks.map((tick, index) => {

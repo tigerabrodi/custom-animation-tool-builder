@@ -93,9 +93,9 @@ export const KeyframeMarker: React.FC<KeyframeMarkerProps> = ({
     <div
       className="absolute cursor-pointer group"
       style={{
-        transform: `translateX(${leftPosition}px) translateX(-${halfSize}px)`,
+        left: leftPosition,
+        transform: `translateX(-${halfSize}px) translateY(-50%)`,
         top: '50%',
-        marginTop: -halfSize,
       }}
       onClick={handleClick}
       onMouseDown={handleMouseDown}

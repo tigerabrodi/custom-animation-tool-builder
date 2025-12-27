@@ -76,7 +76,7 @@ export const BoneTreeNode: React.FC<BoneTreeNodeProps> = ({
         {/* Bone name */}
         <span
           onClick={handleSelectBone}
-          className="flex-1"
+          className="flex-1 min-w-0 truncate"
         >
           {boneName}
         </span>

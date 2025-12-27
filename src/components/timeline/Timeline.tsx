@@ -19,6 +19,7 @@ export interface TimelineProps {
 const TIMELINE_HEIGHT = 120;
 const TIME_RULER_HEIGHT = 24;
 const DEFAULT_ZOOM = 100; // pixels per second
+const MIN_DISPLAY_DURATION = 5; // minimum timeline length in seconds
 
 export const Timeline: React.FC<TimelineProps> = ({
   duration,
@@ -31,6 +32,9 @@ export const Timeline: React.FC<TimelineProps> = ({
   zoom = DEFAULT_ZOOM,
   snapInterval = null,
 }) => {
+  // Use minimum duration for display, but allow extending beyond
+  const displayDuration = Math.max(duration, MIN_DISPLAY_DURATION, currentTime + 1);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -49,20 +53,22 @@ export const Timeline: React.FC<TimelineProps> = ({
     [snapInterval]
   );
 
-  // Clamp time to valid range
+  // Clamp time to valid range (allow up to display duration for playhead)
   const clampTime = useCallback(
     (time: number): number => {
-      return Math.max(0, Math.min(duration, time));
+      return Math.max(0, Math.min(displayDuration, time));
     },
-    [duration]
+    [displayDuration]
   );
 
   // Keyframe drag handlers
   const handleKeyframeDragStart = useCallback((id: string) => {
+    console.log('[Timeline] handleKeyframeDragStart - id:', id)
     const keyframe = keyframes.find(kf => kf.id === id);
     if (keyframe) {
       setDraggingKeyframeId(id);
       dragStartTimeRef.current = keyframe.time;
+      console.log('[Timeline] handleKeyframeDragStart - started at time:', keyframe.time)
     }
   }, [keyframes]);
 
@@ -72,6 +78,7 @@ export const Timeline: React.FC<TimelineProps> = ({
     let newTime = dragStartTimeRef.current + deltaTime;
     newTime = snapTime(newTime);
     newTime = clampTime(newTime);
+    console.log('[Timeline] handleKeyframeDrag - id:', id, 'deltaX:', deltaX, 'newTime:', newTime)
     onKeyframeMove(id, newTime);
   }, [draggingKeyframeId, zoom, snapTime, clampTime, onKeyframeMove]);
 
@@ -82,7 +89,11 @@ export const Timeline: React.FC<TimelineProps> = ({
   // Handle click on timeline to set playhead position
   const handleTimelineClick = useCallback(
     (e: React.MouseEvent) => {
-      if (!trackRef.current) return;
+      console.log('[Timeline] handleTimelineClick - target:', (e.target as HTMLElement).className)
+      if (!trackRef.current) {
+        console.log('[Timeline] handleTimelineClick ABORTED - no trackRef')
+        return;
+      }
 
       const rect = trackRef.current.getBoundingClientRect();
       const scrollLeft = trackRef.current.parentElement?.scrollLeft || 0;
@@ -92,13 +103,14 @@ export const Timeline: React.FC<TimelineProps> = ({
       const snappedTime = snapTime(time);
       const clampedTime = clampTime(snappedTime);
 
+      console.log('[Timeline] handleTimelineClick - clickX:', clickX, 'time:', time, 'snappedTime:', snappedTime, 'clampedTime:', clampedTime)
       onTimeChange(clampedTime);
     },
     [zoom, snapTime, clampTime, onTimeChange]
   );
 
-  // Calculate total content width
-  const contentWidth = Math.max(duration * zoom, 100);
+  // Calculate total content width based on display duration
+  const contentWidth = Math.max(displayDuration * zoom, 100);
 
   // Track height (total height minus ruler)
   const trackHeight = TIMELINE_HEIGHT - TIME_RULER_HEIGHT;
@@ -126,18 +138,18 @@ export const Timeline: React.FC<TimelineProps> = ({
         >
           {/* Time ruler at top */}
           <TimeRuler
-            duration={duration}
+            duration={displayDuration}
             pixelsPerSecond={zoom}
             height={TIME_RULER_HEIGHT}
           />
 
           {/* Keyframe track */}
-          <div style={{ height: trackHeight }}>
+          <div style={{ height: trackHeight }} className="relative">
             <KeyframeTrack
               keyframes={keyframes}
               selectedKeyframeId={selectedKeyframeId}
               pixelsPerSecond={zoom}
-              duration={duration}
+              duration={displayDuration}
               onKeyframeSelect={onKeyframeSelect}
               onKeyframeDragStart={handleKeyframeDragStart}
               onKeyframeDrag={handleKeyframeDrag}
@@ -155,9 +167,9 @@ export const Timeline: React.FC<TimelineProps> = ({
           {/* Snap grid visualization (subtle lines) */}
           {snapInterval && snapInterval > 0 && (
             <div className="absolute inset-0 pointer-events-none" style={{ top: TIME_RULER_HEIGHT }}>
-              {Array.from({ length: Math.ceil(duration / snapInterval) + 1 }).map((_, i) => {
+              {Array.from({ length: Math.ceil(displayDuration / snapInterval) + 1 }).map((_, i) => {
                 const time = i * snapInterval;
-                if (time > duration) return null;
+                if (time > displayDuration) return null;
                 return (
                   <div
                     key={i}
@@ -171,9 +183,11 @@ export const Timeline: React.FC<TimelineProps> = ({
         </div>
       </div>
 
-      {/* Duration indicator */}
+      {/* Duration indicator - show actual duration or keyframe count */}
       <div className="absolute bottom-1 right-2 text-xs text-gray-500 pointer-events-none">
-        {duration.toFixed(1)}s
+        {keyframes.length > 0
+          ? `${duration.toFixed(1)}s (${keyframes.length} KF)`
+          : 'No keyframes'}
       </div>
     </div>
   );

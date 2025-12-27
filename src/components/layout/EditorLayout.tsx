@@ -23,16 +23,16 @@ export const EditorLayout: React.FC<EditorLayoutProps> = ({
       </div>
 
       {/* Main content area */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden min-h-0">
         {/* Left panel - bone tree (~250px) */}
         <div className="flex-shrink-0 w-[250px] border-r border-gray-700 overflow-hidden">
           {leftPanel}
         </div>
 
         {/* Center and bottom area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0 min-h-0">
           {/* Viewport - fills remaining center space */}
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden min-h-0">
             {viewport}
           </div>
 

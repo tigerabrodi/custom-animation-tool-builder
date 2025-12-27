@@ -82,7 +82,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onClose }) => {
       `.trim()}
     >
       <span className="text-lg">{toastIcons[toast.type]}</span>
-      <span className="flex-1 text-sm font-medium">{toast.message}</span>
+      <span className="flex-1 min-w-0 text-sm font-medium">{toast.message}</span>
       <button
         onClick={onClose}
         className="ml-2 rounded p-1 hover:bg-white/20 transition-colors"

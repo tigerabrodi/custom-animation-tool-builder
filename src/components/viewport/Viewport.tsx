@@ -1,5 +1,6 @@
-import { Grid, OrbitControls } from '@react-three/drei'
+import { OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
+import { useCallback } from 'react'
 import * as THREE from 'three'
 import type {
   BoneName,
@@ -65,22 +66,10 @@ function Scene({
     <>
       {/* Lighting */}
       <ambientLight intensity={0.5} />
-      <directionalLight position={[5, 10, 5]} intensity={1} castShadow />
+      <directionalLight position={[5, 10, 5]} intensity={1} />
 
-      {/* Ground Grid */}
-      <Grid
-        args={[20, 20]}
-        cellSize={0.5}
-        cellThickness={0.5}
-        cellColor="#6b7280"
-        sectionSize={2}
-        sectionThickness={1}
-        sectionColor="#374151"
-        fadeDistance={25}
-        fadeStrength={1}
-        followCamera={false}
-        infiniteGrid
-      />
+      {/* Ground Grid - Simple grid to avoid GPU issues */}
+      <gridHelper args={[20, 40, '#374151', '#4b5563']} />
 
       {/* Model */}
       {modelUrl && (
@@ -155,6 +144,18 @@ export function Viewport({
     onSelectBone?.(null)
   }
 
+  // Handle WebGL context loss
+  const handleCreated = useCallback(({ gl }: { gl: THREE.WebGLRenderer }) => {
+    const canvas = gl.domElement
+    canvas.addEventListener('webglcontextlost', (event) => {
+      event.preventDefault()
+      console.error('WebGL context lost! Attempting to restore...')
+    })
+    canvas.addEventListener('webglcontextrestored', () => {
+      console.log('WebGL context restored')
+    })
+  }, [])
+
   return (
     <div className="w-full h-full">
       <Canvas
@@ -164,8 +165,8 @@ export function Viewport({
           near: 0.1,
           far: 100,
         }}
-        shadows
         onPointerMissed={handlePointerMissed}
+        onCreated={handleCreated}
       >
         <Scene
           modelUrl={modelUrl}

@@ -19,6 +19,7 @@ interface UseClipsReturn {
   duplicateClip: (clipId: string, newName: string) => AnimationClip | null
   renameClip: (clipId: string, newName: string) => boolean
   deleteClip: (clipId: string) => boolean
+  clearAllClips: () => void
   setActiveClip: (clipId: string | null) => void
   getActiveClip: () => AnimationClip | null
   updateClipKeyframes: (clipId: string, keyframes: Keyframe[]) => boolean
@@ -56,26 +57,29 @@ export function useClips(): UseClipsReturn {
         return null
       }
 
-      const sourceClip = clips.find((clip) => clip.id === clipId)
-      if (!sourceClip) {
-        return null
-      }
+      let duplicatedClip: AnimationClip | null = null
+      setClips((prev) => {
+        const sourceClip = prev.find((clip) => clip.id === clipId)
+        if (!sourceClip) {
+          return prev
+        }
 
-      const duplicatedClip: AnimationClip = {
-        ...sourceClip,
-        id: crypto.randomUUID(),
-        name: newName,
-        keyframes: sourceClip.keyframes.map((kf) => ({
-          ...kf,
+        duplicatedClip = {
+          ...sourceClip,
           id: crypto.randomUUID(),
-          bones: { ...kf.bones },
-        })),
-      }
+          name: newName,
+          keyframes: sourceClip.keyframes.map((kf) => ({
+            ...kf,
+            id: crypto.randomUUID(),
+            bones: { ...kf.bones },
+          })),
+        }
 
-      setClips((prev) => [...prev, duplicatedClip])
+        return [...prev, duplicatedClip]
+      })
       return duplicatedClip
     },
-    [clips]
+    []
   )
 
   const renameClip = useCallback(
@@ -84,39 +88,48 @@ export function useClips(): UseClipsReturn {
         return false
       }
 
-      const clipExists = clips.some((clip) => clip.id === clipId)
-      if (!clipExists) {
-        return false
-      }
-
-      setClips((prev) =>
-        prev.map((clip) =>
+      let found = false
+      setClips((prev) => {
+        const clipExists = prev.some((clip) => clip.id === clipId)
+        if (!clipExists) {
+          return prev
+        }
+        found = true
+        return prev.map((clip) =>
           clip.id === clipId ? { ...clip, name: newName } : clip
         )
-      )
-      return true
+      })
+      return found
     },
-    [clips]
+    []
   )
 
   const deleteClip = useCallback(
     (clipId: string): boolean => {
-      const clipExists = clips.some((clip) => clip.id === clipId)
-      if (!clipExists) {
-        return false
-      }
-
-      setClips((prev) => prev.filter((clip) => clip.id !== clipId))
+      let found = false
+      setClips((prev) => {
+        const clipExists = prev.some((clip) => clip.id === clipId)
+        if (!clipExists) {
+          return prev
+        }
+        found = true
+        return prev.filter((clip) => clip.id !== clipId)
+      })
 
       // Clear active clip if we're deleting it
-      if (activeClipId === clipId) {
-        setActiveClipId(null)
+      if (found) {
+        setActiveClipId((prevId) => (prevId === clipId ? null : prevId))
       }
 
-      return true
+      return found
     },
-    [clips, activeClipId]
+    []
   )
+
+  const clearAllClips = useCallback(() => {
+    setClips([])
+    setActiveClipId(null)
+  }, [])
 
   const setActiveClip = useCallback((clipId: string | null) => {
     setActiveClipId(clipId)
@@ -131,40 +144,46 @@ export function useClips(): UseClipsReturn {
 
   const updateClipKeyframes = useCallback(
     (clipId: string, keyframes: Keyframe[]): boolean => {
-      const clipExists = clips.some((clip) => clip.id === clipId)
-      if (!clipExists) {
-        return false
-      }
-
       // Calculate duration from last keyframe time
       const duration =
         keyframes.length > 0 ? Math.max(...keyframes.map((kf) => kf.time)) : 0
 
-      setClips((prev) =>
-        prev.map((clip) =>
+      console.log('[useClips] updateClipKeyframes - clipId:', clipId, 'keyframes:', keyframes.length, 'times:', keyframes.map(kf => kf.time), 'calculated duration:', duration)
+
+      let found = false
+      setClips((prev) => {
+        const clipExists = prev.some((clip) => clip.id === clipId)
+        if (!clipExists) {
+          console.log('[useClips] updateClipKeyframes - clip NOT FOUND')
+          return prev
+        }
+        found = true
+        console.log('[useClips] updateClipKeyframes - updating clip with duration:', duration)
+        return prev.map((clip) =>
           clip.id === clipId ? { ...clip, keyframes, duration } : clip
         )
-      )
-      return true
+      })
+      return found
     },
-    [clips]
+    [] // No dependencies - uses callback form of setClips
   )
 
   const setClipInterpolation = useCallback(
     (clipId: string, mode: InterpolationMode): boolean => {
-      const clipExists = clips.some((clip) => clip.id === clipId)
-      if (!clipExists) {
-        return false
-      }
-
-      setClips((prev) =>
-        prev.map((clip) =>
+      let found = false
+      setClips((prev) => {
+        const clipExists = prev.some((clip) => clip.id === clipId)
+        if (!clipExists) {
+          return prev
+        }
+        found = true
+        return prev.map((clip) =>
           clip.id === clipId ? { ...clip, interpolation: mode } : clip
         )
-      )
-      return true
+      })
+      return found
     },
-    [clips]
+    []
   )
 
   /**
@@ -243,6 +262,7 @@ export function useClips(): UseClipsReturn {
     duplicateClip,
     renameClip,
     deleteClip,
+    clearAllClips,
     setActiveClip,
     getActiveClip,
     updateClipKeyframes,

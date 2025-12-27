@@ -29,10 +29,12 @@ export function usePlayback(): UsePlaybackReturn {
   const [direction, setDirection] = useState<1 | -1>(1)
 
   const play = useCallback(() => {
+    console.log('[usePlayback] play() called')
     setIsPlaying(true)
   }, [])
 
   const pause = useCallback(() => {
+    console.log('[usePlayback] pause() called')
     setIsPlaying(false)
   }, [])
 
@@ -43,6 +45,7 @@ export function usePlayback(): UsePlaybackReturn {
   }, [])
 
   const setCurrentTime = useCallback((time: number) => {
+    console.log('[usePlayback] setCurrentTime called - time:', time)
     setCurrentTimeState(Math.max(0, time))
   }, [])
 
@@ -58,18 +61,27 @@ export function usePlayback(): UsePlaybackReturn {
 
   const tick = useCallback(
     (deltaTime: number, duration: number) => {
-      if (!isPlaying || duration <= 0) {
+      if (!isPlaying) {
         return
       }
+
+      // If duration is 0 or negative, just advance time linearly (no looping)
+      // This allows playback to work even when all keyframes are at time 0
+      const effectiveDuration = duration > 0 ? duration : Infinity
+
+      console.log('[usePlayback] tick - deltaTime:', deltaTime.toFixed(4), 'duration:', duration, 'effectiveDuration:', effectiveDuration, 'currentTime:', currentTime.toFixed(3))
 
       // Calculate the time delta based on speed and direction
       const timeDelta = deltaTime * speedMultiplier * direction
       const newTime = currentTime + timeDelta
 
-      switch (loopMode) {
+      // If duration is 0, treat as ONCE mode (no looping possible)
+      const effectiveLoopMode = duration <= 0 ? 'ONCE' : loopMode
+
+      switch (effectiveLoopMode) {
         case 'ONCE':
           // Clamp at duration or 0, stop playing when reaching the end
-          if (direction === 1 && newTime >= duration) {
+          if (direction === 1 && duration > 0 && newTime >= duration) {
             setCurrentTimeState(duration)
             setIsPlaying(false)
             return
@@ -78,11 +90,11 @@ export function usePlayback(): UsePlaybackReturn {
             setIsPlaying(false)
             return
           }
-          setCurrentTimeState(newTime)
+          setCurrentTimeState(Math.max(0, newTime))
           return
 
         case 'LOOP':
-          // Wrap time using modulo
+          // Wrap time using modulo (only if duration > 0)
           if (newTime >= duration) {
             setCurrentTimeState(newTime % duration)
           } else if (newTime < 0) {

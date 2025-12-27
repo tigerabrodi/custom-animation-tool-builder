@@ -58,6 +58,7 @@ Hips (root)
 ### Stage 3: Animation Core (Phases 4, 6, 8) - FULLY COMPLETED
 
 #### Agent A: Keyframes
+
 - [x] Keyframe type: `{ id, time, label?, bones: Record<BoneName, BoneTransform> }`
 - [x] useKeyframes hook (src/hooks/useKeyframes.ts)
 - [x] Add keyframe (capture current pose at time)
@@ -66,9 +67,10 @@ Hips (root)
 - [x] Select keyframe
 - [x] `interpolatePoseAtTime` function (LINEAR, STEP modes)
 - [x] `findSurroundingKeyframes` helper
-- [x] Tests: src/__tests__/interpolation.test.ts
+- [x] Tests: src/**tests**/interpolation.test.ts
 
 #### Agent B: Clips
+
 - [x] AnimationClip: `{ id, name, duration, keyframes, loopMode, interpolation }`
 - [x] useClips hook (src/hooks/useClips.ts)
 - [x] Create/duplicate/rename/delete clip (PascalCase validation)
@@ -77,6 +79,7 @@ Hips (root)
 - [x] ClipPropertiesPanel UI (src/components/panels/ClipPropertiesPanel.tsx)
 
 #### Agent C: Playback
+
 - [x] usePlayback hook (src/hooks/usePlayback.ts)
 - [x] PlaybackState: isPlaying, currentTime, speedMultiplier, loopMode, direction
 - [x] Play/pause/stop controls
@@ -86,6 +89,7 @@ Hips (root)
 - [x] PlaybackControls UI (src/components/panels/PlaybackControls.tsx)
 
 #### Integration Status - COMPLETED
+
 - [x] Wire up useKeyframes + useClips + usePlayback in App.tsx
 - [x] Add ClipListPanel and ClipPropertiesPanel to UI
 - [x] Add PlaybackControls to UI
@@ -96,6 +100,7 @@ Hips (root)
 **Parallelized 2 agents:**
 
 #### Agent A: Timeline Core - COMPLETED
+
 - [x] Timeline.tsx main component
 - [x] TimeRuler.tsx (time markers, grid)
 - [x] KeyframeTrack.tsx (keyframe display area)
@@ -104,6 +109,7 @@ Hips (root)
 - [x] Time labels (dynamic intervals based on zoom)
 
 #### Agent B: Timeline Interactions - COMPLETED
+
 - [x] Click timeline to move playhead
 - [x] Drag keyframes to retime
 - [x] useTimelineDrag hook for smooth dragging
@@ -119,6 +125,7 @@ Hips (root)
 **Parallelized 3 agents:**
 
 #### Agent A: Advanced Interpolation - COMPLETED
+
 - [x] STEP interpolation (instant snap to previous keyframe)
 - [x] CUBICSPLINE interpolation (Catmull-Rom for position/scale, Squad for quaternions)
 - [x] Auto tangent calculation via surrounding keyframes
@@ -126,6 +133,7 @@ Hips (root)
 - [x] Falls back to LINEAR when < 4 keyframes
 
 #### Agent B: Timeline Operations - COMPLETED
+
 - [x] Scale clip duration (`scaleKeyframeTimes`)
 - [x] Offset clip timing (`offsetKeyframeTimes`)
 - [x] Reverse clip timing (`reverseKeyframeTimes`)
@@ -134,35 +142,37 @@ Hips (root)
 - [x] ClipOperationsPanel UI
 
 #### Agent C: Visualization Modes - COMPLETED
+
 - [x] Toggle mesh visibility via group wrapper
 - [x] Skeleton-only view mode
 - [x] VisualizationMode: 'MESH' | 'SKELETON' | 'BOTH'
 - [x] VisualizationPanel segmented control UI
 - [x] useVisualization hook
 
-### Stage 6: Export System (Phase 10) - NOT STARTED
+### Stage 6: Export System (Phase 10) - FULLY COMPLETED
 
 **Sequential (depends on animation core):**
 
-- [ ] Install @gltf-transform/core
-- [ ] `clipToGltfAnimationData` conversion
-- [ ] `flattenTransformPath` for rotation/translation/scale
-- [ ] `flattenTimes` helper
-- [ ] `getAnimatedBones` helper
-- [ ] Read original GLB into gltf-transform Document
-- [ ] Create Animation nodes for each clip
-- [ ] Create channels + samplers per bone
-- [ ] Handle name conflicts (overwrite existing with same name)
-- [ ] Preserve non-conflicting existing animations
-- [ ] `buildExportPreview` function
-- [ ] ExportDialog UI
-- [ ] Trigger browser download
+- [x] Install @gltf-transform/core
+- [x] `clipToGltfAnimationData` conversion
+- [x] `flattenTransformPath` for rotation/translation/scale
+- [x] `flattenTimes` helper
+- [x] `getAnimatedBones` helper
+- [x] Read original GLB into gltf-transform Document
+- [x] Create Animation nodes for each clip
+- [x] Create channels + samplers per bone
+- [x] Handle name conflicts (overwrite existing with same name)
+- [x] Preserve non-conflicting existing animations
+- [x] `buildExportPreview` function
+- [x] ExportDialog UI
+- [x] Trigger browser download
 
 ### Stage 7: Persistence & Polish (Phases 12-14) - NOT STARTED
 
 **Can parallelize 3 agents:**
 
 #### Agent A: Session Persistence
+
 - [ ] `serializeSession` / `deserializeSession`
 - [ ] `arrayBufferToBase64` / `base64ToArrayBuffer`
 - [ ] Auto-save to localStorage (every 30s)
@@ -171,6 +181,7 @@ Hips (root)
 - [ ] Manual "Load Session" (JSON upload)
 
 #### Agent B: Keyboard Shortcuts
+
 - [ ] R - Transform mode: Rotate
 - [ ] G - Transform mode: Translate
 - [ ] S - Transform mode: Scale
@@ -182,6 +193,7 @@ Hips (root)
 - [ ] Keyboard shortcut cheat sheet UI
 
 #### Agent C: Polish
+
 - [ ] Error handling throughout
 - [ ] Loading states
 - [ ] Toast notifications for actions
@@ -200,14 +212,17 @@ Hips (root)
 ## Key Files Reference
 
 ### Types
+
 - `src/types/skeleton.ts` - BoneName, BoneTransform
 - `src/types/animation.ts` - Keyframe, AnimationClip, PlaybackState
 - `src/types/editor.ts` - UIState, TransformMode, CoordinateSpace
 
 ### Constants
+
 - `src/constants/skeleton.ts` - BONE_NAMES, SKELETON_HIERARCHY
 
 ### Hooks
+
 - `src/hooks/useModelLoader.ts` - GLB file loading
 - `src/hooks/useSkeletonEditor.ts` - Bone selection, transforms, bind pose
 - `src/hooks/useKeyframes.ts` - Keyframe CRUD, selection
@@ -220,6 +235,7 @@ Hips (root)
 - `src/hooks/useVisualization.ts` - Visualization mode state
 
 ### Components
+
 - `src/components/viewport/Viewport.tsx` - Main 3D canvas
 - `src/components/viewport/BoneOverlay.tsx` - Skeleton visualization
 - `src/components/viewport/TransformGizmo.tsx` - TransformControls wrapper
@@ -237,17 +253,22 @@ Hips (root)
 - `src/components/timeline/KeyframeMarker.tsx` - Individual keyframe marker
 - `src/components/timeline/Playhead.tsx` - Current time indicator
 - `src/components/timeline/TimelineControls.tsx` - Zoom and snap controls
+- `src/components/dialogs/ExportDialog.tsx` - Export GLB dialog with clip selection
 
 ### Services
+
 - `src/services/glbLoader.ts` - GLB validation + loading
 - `src/services/skeletonParser.ts` - Extract skeleton from scene
+- `src/services/glbExporter.ts` - Export GLB with baked animations
 
 ### Utils
+
 - `src/utils/math.ts` - quaternionSlerp, vector3Lerp, etc.
 - `src/utils/validation.ts` - validatePascalCase
 - `src/utils/interpolation.ts` - interpolatePoseAtTime, findSurroundingKeyframes
 - `src/utils/timelineUtils.ts` - snapToGrid, pixelsToTime, timeToPixels, getTickInterval
 - `src/utils/clipOperations.ts` - scaleKeyframeTimes, offsetKeyframeTimes, reverseKeyframeTimes
+- `src/utils/exportUtils.ts` - flattenTimes, flattenTransformPath, getAnimatedBones, buildExportPreview
 
 ---
 
