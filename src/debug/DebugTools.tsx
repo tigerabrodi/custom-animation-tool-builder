@@ -1,5 +1,8 @@
+/* eslint-disable react-hooks/refs */
+// Debug utilities intentionally access refs during render for debugging purposes
+
 import { useFrame } from '@react-three/fiber'
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useId, useRef, type ReactNode } from 'react'
 
 // ============================================
 // 1. LIFECYCLE DEBUG WRAPPER
@@ -11,27 +14,28 @@ interface DebugWrapperProps {
 }
 
 export function DebugLifecycle({ name, children }: DebugWrapperProps) {
-  const instanceId = useRef(Math.random().toString(36).slice(2, 8))
+  const instanceId = useId()
   const renderCount = useRef(0)
   renderCount.current++
 
   console.log(
-    `%c[${name}:${instanceId.current}] Render #${renderCount.current}`,
+    `%c[${name}:${instanceId}] Render #${renderCount.current}`,
     'color: #888'
   )
 
   useEffect(() => {
+    const id = instanceId
     console.log(
-      `%c[${name}:${instanceId.current}] ✅ MOUNTED`,
+      `%c[${name}:${id}] ✅ MOUNTED`,
       'color: #0f0; font-weight: bold'
     )
     return () => {
       console.log(
-        `%c[${name}:${instanceId.current}] ❌ UNMOUNTED`,
+        `%c[${name}:${id}] ❌ UNMOUNTED`,
         'color: #f00; font-weight: bold'
       )
     }
-  }, [name])
+  }, [name, instanceId])
 
   return <>{children}</>
 }
@@ -42,11 +46,16 @@ export function DebugLifecycle({ name, children }: DebugWrapperProps) {
 // ============================================
 export function DebugFrameCounter() {
   const frameCount = useRef(0)
-  const lastLogTime = useRef(Date.now())
+  const lastLogTime = useRef<number | null>(null)
 
   useFrame(() => {
     frameCount.current++
     const now = Date.now()
+
+    // Initialize on first frame
+    if (lastLogTime.current === null) {
+      lastLogTime.current = now
+    }
 
     // Log every 500ms
     if (now - lastLogTime.current > 500) {
@@ -59,10 +68,11 @@ export function DebugFrameCounter() {
   })
 
   useEffect(() => {
+    const count = frameCount
     console.log('%c[FrameCounter] Started', 'color: #0ff; font-weight: bold')
     return () => {
       console.log(
-        `%c[FrameCounter] Stopped after ${frameCount.current} frames`,
+        `%c[FrameCounter] Stopped after ${count.current} frames`,
         'color: #f80; font-weight: bold'
       )
     }

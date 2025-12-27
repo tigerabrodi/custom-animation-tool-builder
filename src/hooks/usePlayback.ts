@@ -62,10 +62,6 @@ export function usePlayback(): UsePlaybackReturn {
         return
       }
 
-      // If duration is 0 or negative, just advance time linearly (no looping)
-      // This allows playback to work even when all keyframes are at time 0
-      const effectiveDuration = duration > 0 ? duration : Infinity
-
       // Calculate the time delta based on speed and direction
       const timeDelta = deltaTime * speedMultiplier * direction
       const newTime = currentTime + timeDelta
